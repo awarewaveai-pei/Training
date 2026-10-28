@@ -1,16 +1,3353 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="zh-Hant">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#f7f8f4">
+    <title>幸福財務｜個人財務規劃系統 V7.1（經檢驗的歷史回測與貸款比較）</title>
+    <style>
+        :root {
+            --bg: #f7f8f4;
+            --paper: #fff;
+            --ink: #26392f;
+            --muted: #718075;
+            --green: #315e49;
+            --green2: #e8f0e8;
+            --line: #e1e7df;
+            --subtle: #f5f7f2;
+            --apricot: #fff4ea;
+            --warn: #a24e36;
+            --warm: #d5aa85;
+            --radius: 16px;
+            --shadow: 0 6px 24px rgba(40, 70, 49, .035)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            font: 15px/1.6 system-ui, -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+            background: var(--bg);
+            font-variant-numeric: tabular-nums
+        }
+
+        button,
+        input,
+        select {
+            font: inherit
+        }
+
+        button {
+            cursor: pointer
+        }
+
+        button:disabled {
+            opacity: .55;
+            cursor: not-allowed
+        }
+
+        a {
+            color: inherit
+        }
+
+        .shell {
+            max-width: 1160px;
+            padding: 0 24px;
+            margin: auto
+        }
+
+        .topline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 21px 0;
+            border-bottom: 1px solid var(--line);
+            gap: 16px
+        }
+
+        .brand {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: .02em
+        }
+
+        .brand small {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 400;
+            margin-left: 12px
+        }
+
+        .topnote {
+            font-size: 12px;
+            border: 1px solid var(--line);
+            background: #edf2eb;
+            padding: 6px 12px;
+            border-radius: 30px;
+            color: var(--muted)
+        }
+
+        .hero {
+            padding: 40px 0 22px
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            letter-spacing: .14em;
+            font-weight: 800;
+            color: #708d78
+        }
+
+        .hero h1 {
+            font-size: clamp(26px, 3.4vw, 37px);
+            line-height: 1.27;
+            letter-spacing: -.035em;
+            margin: 10px 0 12px
+        }
+
+        .hero p {
+            color: var(--muted);
+            margin: 0;
+            max-width: 800px
+        }
+
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 6px;
+            padding: 7px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 15px;
+            margin: 0 0 26px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            box-shadow: 0 4px 20px rgba(35, 63, 40, .03)
+        }
+
+        .tab {
+            min-width: 0;
+            border: 0;
+            border-radius: 9px;
+            background: transparent;
+            padding: 11px 5px;
+            color: #65756b;
+            font-size: 13px;
+            font-weight: 700
+        }
+
+        .tab.active {
+            color: #284d3b;
+            background: #eaf2e9
+        }
+
+        .tab:focus-visible,
+        .btn:focus-visible,
+        input:focus-visible,
+        select:focus-visible {
+            outline: 2px solid #83ac8b;
+            outline-offset: 2px
+        }
+
+        .page {
+            display: none;
+            animation: entry .18s ease
+        }
+
+        .page.active {
+            display: block
+        }
+
+        @keyframes entry {
+            from {
+                opacity: .6;
+                transform: translateY(2px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .section-head {
+            margin: 0 0 20px
+        }
+
+        .section-head .eyebrow {
+            margin: 0 0 5px
+        }
+
+        .section-head h2 {
+            font-size: 23px;
+            letter-spacing: -.025em;
+            line-height: 1.3;
+            margin: 0 0 6px
+        }
+
+        .section-head p {
+            font-size: 13px;
+            color: var(--muted);
+            margin: 0
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            align-items: start
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px
+        }
+
+        .cards-4 {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px
+        }
+
+        .panel {
+            min-width: 0;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--paper);
+            padding: 22px;
+            box-shadow: var(--shadow)
+        }
+
+        .panel h3 {
+            margin: 0 0 4px;
+            font-size: 17px;
+            letter-spacing: -.01em
+        }
+
+        .panel>.desc {
+            margin: 0 0 21px;
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .panel+.panel {
+            margin-top: 16px
+        }
+
+        .wide {
+            grid-column: 1/-1
+        }
+
+        .metric {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            padding: 18px;
+            min-width: 0
+        }
+
+        .metric.major {
+            background: var(--green2);
+            border-color: #dce6da
+        }
+
+        .metric .cap {
+            font-size: 12px;
+            color: #6b7a70;
+            font-weight: 600
+        }
+
+        .metric .big {
+            font-size: clamp(22px, 2.5vw, 29px);
+            font-weight: 800;
+            letter-spacing: -.02em;
+            margin: 5px 0;
+            overflow-wrap: anywhere
+        }
+
+        .metric .sub {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .metric .big.negative {
+            color: var(--warn)
+        }
+
+        .subheading {
+            border-top: 1px solid var(--line);
+            padding-top: 17px;
+            margin: 23px 0 13px;
+            font-weight: 800;
+            font-size: 13px
+        }
+
+        .fields {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px 12px
+        }
+
+        .field {
+            min-width: 0;
+            display: block
+        }
+
+        .field>span {
+            font-size: 12px;
+            color: #66746b;
+            display: block;
+            min-height: 25px;
+            font-weight: 650
+        }
+
+        .field .entry {
+            position: relative
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            height: 44px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: #fbfcf9;
+            padding: 8px 13px;
+            text-align: right;
+            color: #24372a;
+            outline: 0
+        }
+
+        .field select {
+            text-align: left
+        }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: #9ab29e;
+            box-shadow: 0 0 0 3px #ebf2e9
+        }
+
+        .field .entry input {
+            padding-right: 39px
+        }
+
+        .field .unit {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #9aa69c;
+            pointer-events: none
+        }
+
+        .field.full {
+            grid-column: 1/-1
+        }
+
+        .fields .hint {
+            grid-column: 1/-1
+        }
+
+        .hint,
+        .fine {
+            font-size: 12px;
+            line-height: 1.75;
+            color: var(--muted)
+        }
+
+        .hint {
+            background: var(--subtle);
+            padding: 13px 15px;
+            border: 1px solid var(--line);
+            border-radius: 10px
+        }
+
+        .hint.warn {
+            color: #8f563d;
+            background: var(--apricot);
+            border-color: #f1dfd0
+        }
+
+        .minor {
+            font-size: 12px;
+            color: var(--muted);
+            margin: 0
+        }
+
+        .inline-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 17px
+        }
+
+        .btn {
+            border: 1px solid #d9e2d6;
+            color: #45634b;
+            background: #fff;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px 13px
+        }
+
+        .btn.primary {
+            background: var(--green);
+            color: #fff;
+            border-color: var(--green)
+        }
+
+        .btn.ghost {
+            border-color: #eee5de;
+            color: #806951
+        }
+
+        .btn:hover {
+            filter: brightness(.98)
+        }
+
+        .result {
+            border-radius: 12px;
+            background: var(--green2);
+            border: 1px solid #dce6da;
+            padding: 18px
+        }
+
+        .result .value {
+            font-size: clamp(26px, 3vw, 35px);
+            font-weight: 800;
+            letter-spacing: -.025em;
+            margin: 5px 0
+        }
+
+        .result small {
+            display: block;
+            color: #728072
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px
+        }
+
+        .stat {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 14px;
+            background: #fff;
+            min-width: 0
+        }
+
+        .stat .val {
+            font-size: 18px;
+            font-weight: 800;
+            word-break: break-word
+        }
+
+        .stat .label {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .progress {
+            height: 8px;
+            background: #e9eee8;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 10px 0
+        }
+
+        .progress>span {
+            display: block;
+            width: 0%;
+            height: 100%;
+            background: #7fa28a;
+            border-radius: 12px;
+            transition: width .2s
+        }
+
+        .kv {
+            display: flex;
+            gap: 18px;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 11px 0;
+            border-bottom: 1px solid #edf1eb;
+            font-size: 13px
+        }
+
+        .kv:last-child {
+            border: 0
+        }
+
+        .kv span {
+            color: #6b7a70
+        }
+
+        .kv strong {
+            text-align: right;
+            font-size: 13px;
+            max-width: 60%
+        }
+
+        .table-wrap {
+            overflow: auto;
+            border: 1px solid var(--line);
+            border-radius: 10px
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 12px;
+            min-width: 500px
+        }
+
+        thead {
+            background: #f2f6f1
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid #eaf0e8;
+            text-align: right;
+            padding: 12px 13px;
+            white-space: nowrap
+        }
+
+        th:first-child,
+        td:first-child {
+            text-align: left
+        }
+
+        tr:last-child td {
+            border: 0
+        }
+
+        .list-nav {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 14px
+        }
+
+        .nav-link {
+            text-align: left;
+            border: 1px solid var(--line);
+            background: var(--subtle);
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer
+        }
+
+        .nav-link strong {
+            display: block;
+            font-size: 13px
+        }
+
+        .nav-link span {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 3px
+        }
+
+        .ladder {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 7px;
+            margin: 18px 0
+        }
+
+        .step {
+            background: #f3f5f0;
+            border: 1px solid #e4eae1;
+            border-radius: 10px;
+            padding: 13px 6px;
+            text-align: center;
+            color: #839186
+        }
+
+        .step strong {
+            display: block;
+            font-size: 14px
+        }
+
+        .step small {
+            display: block;
+            font-size: 10px;
+            line-height: 1.4;
+            margin-top: 6px
+        }
+
+        .step.passed {
+            background: #edf4ed;
+            border-color: #cbdccc;
+            color: #426c4e
+        }
+
+        .step.current {
+            background: var(--green);
+            border-color: var(--green);
+            color: #fff
+        }
+
+        .step.current small {
+            color: #e4f0e5
+        }
+
+        .label-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--ink);
+            margin-bottom: 5px
+        }
+
+        .compound-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 120px 125px 112px auto;
+            gap: 9px;
+            align-items: end;
+            background: #fafbf8;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            padding: 12px;
+            margin-bottom: 9px
+        }
+
+        .compound-row .field>span {
+            font-size: 11px;
+            min-height: 23px
+        }
+
+        .compound-row input,
+        .compound-row select {
+            height: 40px !important
+        }
+
+        .remove {
+            border: 1px solid #e8ded6;
+            color: #ad7765;
+            background: #fff;
+            padding: 9px 8px;
+            height: 40px;
+            border-radius: 9px;
+            font-size: 11px
+        }
+
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px
+        }
+
+        .scenario {
+            padding: 14px;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: #fff
+        }
+
+        .scenario b {
+            display: block;
+            font-size: 17px;
+            letter-spacing: -.015em
+        }
+
+        .scenario span {
+            font-size: 11px;
+            color: var(--muted)
+        }
+
+        .scenario .rate {
+            font-size: 12px;
+            color: #4b6854
+        }
+
+        .pill {
+            font-size: 11px;
+            display: inline-block;
+            background: #e9f2e9;
+            padding: 4px 9px;
+            border-radius: 30px;
+            color: #52755d
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: center
+        }
+
+        .checkbox {
+            display: flex;
+            gap: 9px;
+            align-items: flex-start;
+            font-size: 12px;
+            color: #4b6352
+        }
+
+        .checkbox input {
+            margin-top: 4px;
+            accent-color: #315e49
+        }
+
+        .footer {
+            text-align: center;
+            color: #a1aa9e;
+            padding: 25px 0 35px;
+            font-size: 11px
+        }
+
+        .status {
+            font-size: 12px;
+            color: #728072;
+            margin-left: 5px
+        }
+
+        .warn-text {
+            color: var(--warn) !important
+        }
+
+        .chart {
+            display: flex;
+            align-items: end;
+            gap: 6px;
+            height: 130px;
+            padding-top: 10px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .chart .bar {
+            flex: 1;
+            background: #a4c0a9;
+            opacity: .9;
+            border-radius: 4px 4px 0 0;
+            min-height: 2px
+        }
+
+        .chart .bar:nth-child(2n) {
+            background: #62816c
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: space-between;
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 6px
+        }
+
+        .note {
+            margin-top: 18px;
+            padding: 12px 15px;
+            background: #fbfbf8;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-size: 12px;
+            color: #758279
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+            margin: 8px 0 18px
+        }
+
+        .toolbar .status {
+            align-self: center
+        }
+
+        .overall-status {
+            margin-top: 12px;
+            color: #8a957e;
+            font-size: 12px
+        }
+
+        .read-only {
+            background: #f3f6f0;
+            padding: 12px 13px;
+            border-radius: 9px;
+            border: 1px solid var(--line)
+        }
+
+        .read-only strong {
+            display: block;
+            font-size: 16px
+        }
+
+        .sectiongap {
+            height: 16px
+        }
+
+        .f-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px
+        }
+
+        @media(max-width:950px) {
+            .cards-4 {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .grid {
+                grid-template-columns: 1fr
+            }
+
+            .compound-row {
+                grid-template-columns: minmax(0, 1fr) repeat(3, minmax(85px, 1fr)) auto
+            }
+        }
+
+        @media(max-width:620px) {
+            .shell {
+                padding: 0 14px
+            }
+
+            .topline {
+                padding: 14px 0
+            }
+
+            .brand {
+                font-size: 16px
+            }
+
+            .brand small {
+                display: block;
+                margin-left: 0;
+                margin-top: 0
+            }
+
+            .topnote {
+                font-size: 10px;
+                padding: 5px 8px
+            }
+
+            .hero {
+                padding: 26px 0 20px
+            }
+
+            .hero h1 {
+                font-size: 27px
+            }
+
+            .tabs {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 4px;
+                padding: 5px;
+                position: static
+            }
+
+            .tab {
+                font-size: 12px;
+                padding: 10px 2px
+            }
+
+            .panel {
+                padding: 16px
+            }
+
+            .fields {
+                gap: 11px 9px
+            }
+
+            .field>span {
+                font-size: 11px;
+                min-height: 23px
+            }
+
+            .field input,
+            .field select {
+                height: 42px;
+                padding-left: 8px
+            }
+
+            .grid-3 {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .metric {
+                padding: 13px
+            }
+
+            .metric .big {
+                font-size: 20px
+            }
+
+            .stats {
+                gap: 8px
+            }
+
+            .stat {
+                padding: 11px
+            }
+
+            .stat .val {
+                font-size: 16px
+            }
+
+            .compound-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px
+            }
+
+            .compound-row .name-cell {
+                grid-column: 1/-1
+            }
+
+            .compound-row .remove {
+                grid-column: 1/-1;
+                height: 34px
+            }
+
+            .scenario-grid {
+                grid-template-columns: 1fr
+            }
+
+            .ladder {
+                grid-template-columns: repeat(3, 1fr)
+            }
+
+            .list-nav {
+                grid-template-columns: 1fr
+            }
+
+            .toolbar {
+                justify-content: flex-start
+            }
+
+            .toolbar .status {
+                width: 100%
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+                scroll-behavior: auto !important
+            }
+        }
+
+        /* V4: unified financial master plan */
+        .master {
+            margin: 0 0 18px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden
+        }
+
+        .master-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 20px 22px 16px;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .master-header h3 {
+            font-size: 19px;
+            line-height: 1.4;
+            margin: 0 0 4px;
+            letter-spacing: -.02em
+        }
+
+        .master-header p {
+            font-size: 12px;
+            color: var(--muted);
+            margin: 0
+        }
+
+        .master-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end
+        }
+
+        .master-table-wrap {
+            overflow-x: auto
+        }
+
+        .master-table {
+            width: 100%;
+            min-width: 850px;
+            border-collapse: collapse;
+            font-size: 13px;
+            table-layout: fixed
+        }
+
+        .master-table col:nth-child(1) {
+            width: 24%
+        }
+
+        .master-table col:nth-child(2) {
+            width: 18%
+        }
+
+        .master-table col:nth-child(3) {
+            width: 21%
+        }
+
+        .master-table col:nth-child(4) {
+            width: 23%
+        }
+
+        .master-table col:nth-child(5) {
+            width: 14%
+        }
+
+        .master-table th,
+        .master-table td {
+            padding: 12px 14px;
+            text-align: right;
+            white-space: normal;
+            border-bottom: 1px solid #edf1eb;
+            vertical-align: middle;
+            line-height: 1.5
+        }
+
+        .master-table th:first-child,
+        .master-table td:first-child {
+            text-align: left
+        }
+
+        .master-table th:last-child,
+        .master-table td:last-child {
+            text-align: center
+        }
+
+        .master-table th {
+            font-weight: 750;
+            color: #52665a;
+            font-size: 12px;
+            background: #f3f7f1
+        }
+
+        .master-table td:nth-child(2),
+        .master-table td:nth-child(3) {
+            font-variant-numeric: tabular-nums;
+            font-weight: 650
+        }
+
+        .master-table .master-section td {
+            padding: 9px 14px;
+            text-align: left !important;
+            background: #f8faf6;
+            color: #6c8271;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .055em;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .master-table .master-label {
+            font-weight: 700;
+            color: #344b3a
+        }
+
+        .master-table .master-status {
+            font-size: 12px;
+            color: #5e7465;
+            font-weight: 650
+        }
+
+        .master-table .master-status.bad {
+            color: #ac533e
+        }
+
+        .master-table .master-status.good {
+            color: #347650
+        }
+
+        .master-table .master-source {
+            display: inline-block;
+            min-width: 76px;
+            background: #fff;
+            border: 1px solid #dfe8dc;
+            color: #477052;
+            border-radius: 8px;
+            padding: 6px 8px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700
+        }
+
+        .master-table .master-source:hover {
+            background: #eff5ed
+        }
+
+        .master-table tr.master-row:last-child td {
+            border-bottom: 0
+        }
+
+        .master-foot {
+            padding: 13px 20px;
+            background: #fbfcf9;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.75;
+            border-top: 1px solid var(--line)
+        }
+
+        .master-brief {
+            margin: 0 0 18px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px
+        }
+
+        .brief-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 15px 17px;
+            min-width: 0
+        }
+
+        .brief-card .brief-title {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 750
+        }
+
+        .brief-card .brief-value {
+            font-weight: 800;
+            font-size: 20px;
+            line-height: 1.35;
+            margin: 6px 0 4px;
+            overflow-wrap: anywhere
+        }
+
+        .brief-card .brief-expl {
+            font-size: 11px;
+            color: var(--muted)
+        }
+
+        .plan-panel {
+            margin: 0 0 18px
+        }
+
+        .plan-panel h3 {
+            margin: 0 0 5px
+        }
+
+        .plan-status {
+            margin: 12px 0 0;
+            font-size: 13px;
+            font-weight: 650;
+            color: #5e7465
+        }
+
+        .plan-status.warn {
+            color: var(--warn)
+        }
+
+        .timeline-table {
+            min-width: 720px
+        }
+
+        .timeline-table thead th {
+            text-align: right
+        }
+
+        .timeline-table thead th:first-child {
+            text-align: left
+        }
+
+        .timeline-table tbody td {
+            text-align: right
+        }
+
+        .timeline-table tbody td:first-child {
+            text-align: left
+        }
+
+        .block-note {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.8;
+            margin: 10px 0 0
+        }
+
+        .overview-rest-label {
+            margin: 16px 0 12px;
+            font-size: 12px;
+            letter-spacing: .05em;
+            color: #7c8b7d;
+            font-weight: 800
+        }
+
+        @media(max-width:680px) {
+            .master-header {
+                padding: 16px;
+                display: block
+            }
+
+            .master-header h3 {
+                font-size: 17px
+            }
+
+            .master-actions {
+                justify-content: flex-start;
+                margin-top: 13px
+            }
+
+            .master-table {
+                min-width: 0
+            }
+
+            .master-table col {
+                display: none
+            }
+
+            .master-table thead {
+                display: none
+            }
+
+            .master-table tbody {
+                display: block;
+                padding: 8px;
+                background: #f6f8f4
+            }
+
+            .master-table .master-section {
+                display: block;
+                margin: 0 -8px
+            }
+
+            .master-table .master-section td {
+                display: block;
+                padding: 11px 14px
+            }
+
+            .master-table .master-row {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0;
+                margin: 9px 0;
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                background: #fff;
+                padding: 11px 13px
+            }
+
+            .master-table .master-row td {
+                min-width: 0;
+                border: 0;
+                padding: 5px 3px;
+                text-align: left !important;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                overflow-wrap: anywhere
+            }
+
+            .master-table .master-row td::before {
+                content: attr(data-label);
+                font-size: 10px;
+                font-weight: 600;
+                color: #819184;
+                margin-bottom: 1px
+            }
+
+            .master-table .master-row td:first-child {
+                grid-column: 1/-1;
+                font-size: 14px;
+                padding: 2px 3px 7px;
+                border-bottom: 1px solid #edf1eb;
+                margin-bottom: 5px
+            }
+
+            .master-table .master-row td:first-child::before {
+                display: none
+            }
+
+            .master-table .master-row td:nth-child(4) {
+                grid-column: 1/-1
+            }
+
+            .master-table .master-row td:last-child {
+                grid-column: 1/-1
+            }
+
+            .master-table .master-row td:last-child::before {
+                display: none
+            }
+
+            .master-table .master-source {
+                padding: 5px 9px
+            }
+
+            .master-foot {
+                padding: 12px 14px
+            }
+
+            .master-brief {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px
+            }
+
+            .brief-card {
+                padding: 12px
+            }
+
+            .brief-card:last-child {
+                grid-column: 1/-1
+            }
+
+            .brief-card .brief-value {
+                font-size: 18px
+            }
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                color: #222;
+                font-size: 11px
+            }
+
+            .topline,
+            .topnote,
+            .tabs,
+            .toolbar,
+            .footer,
+            .master-actions,
+            .master-source,
+            .list-nav,
+            .overview-rest-label,
+            .cards-4,
+            .plan-panel+.grid,
+            .brand small {
+                display: none !important
+            }
+
+            .hero {
+                padding: 10px 0
+            }
+
+            .hero h1 {
+                font-size: 18px
+            }
+
+            .page {
+                display: none !important
+            }
+
+            #tab-overview {
+                display: block !important
+            }
+
+            .master {
+                border: 0;
+                box-shadow: none
+            }
+
+            .master-table {
+                min-width: 0;
+                font-size: 10px
+            }
+
+            .master-table th,
+            .master-table td {
+                padding: 7px 6px;
+                white-space: normal
+            }
+
+            .master-table .master-section {
+                break-after: avoid
+            }
+
+            .master-table .master-row {
+                break-inside: avoid
+            }
+
+            .master-header {
+                padding: 10px 0
+            }
+
+            .master-brief {
+                margin-bottom: 12px
+            }
+
+            .shell {
+                max-width: none;
+                padding: 0 6mm
+            }
+        }
+
+
+        /* Keep the overview compact: the new master table is the primary report. */
+        #tab-overview>.cards-4,
+        #tab-overview>.sectiongap,
+        #tab-overview>.grid>.panel:not(.wide) {
+            display: none
+        }
+
+        #tab-overview>.grid>.panel.wide {
+            margin-top: 0
+        }
+
+        #tab-overview .overview-rest-label {
+            margin: 18px 0 10px
+        }
+
+        /* V5: 導引填寫 + 來源與流向；只用文字和一致對齊 */
+        .guidance {
+            border: 1px solid var(--line);
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 22px;
+            margin: 0 0 16px;
+            box-shadow: var(--shadow)
+        }
+
+        .guidance-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 13px
+        }
+
+        .guidance-head h3 {
+            font-size: 17px;
+            margin: 0 0 2px
+        }
+
+        .guidance-head p {
+            font-size: 12px;
+            color: var(--muted);
+            margin: 0
+        }
+
+        .guidance-score {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--green);
+            white-space: nowrap
+        }
+
+        .guidance-track {
+            height: 7px;
+            background: #e7eee7;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px
+        }
+
+        .guidance-track>div {
+            height: 100%;
+            width: 0;
+            background: #789981;
+            transition: width .15s
+        }
+
+        .guidance-steps {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 10px
+        }
+
+        .guide-step {
+            background: #fafbf8;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            min-width: 0;
+            padding: 14px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-height: 137px;
+            justify-content: space-between;
+            transition: border-color .15s, background .15s
+        }
+
+        .guide-step:hover,
+        .guide-step:focus-visible {
+            background: #f0f6ee;
+            border-color: #9db4a1
+        }
+
+        .guide-step.ready {
+            border-color: #b5cbb7;
+            background: #f3f7f1
+        }
+
+        .guide-step .step-index {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 600
+        }
+
+        .guide-step .step-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--ink)
+        }
+
+        .guide-step .step-note {
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.6;
+            min-height: 36px;
+            overflow-wrap: anywhere
+        }
+
+        .guide-step .step-state {
+            font-size: 11px;
+            font-weight: 800;
+            color: #54755d
+        }
+
+        .guidance-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 13px;
+            flex-wrap: wrap;
+            margin-top: 14px
+        }
+
+        .guidance-bottom .fine {
+            flex: 1
+        }
+
+        .guide-main-button {
+            white-space: nowrap
+        }
+
+        .linkage-strip {
+            background: #f2f6f1;
+            border: 1px solid #dce6da;
+            padding: 13px 17px;
+            border-radius: 12px;
+            margin: 0 0 17px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            align-items: center
+        }
+
+        .linkage-box b {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 5px
+        }
+
+        .linkage-box div {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap
+        }
+
+        .data-jump {
+            font: inherit;
+            font-weight: 650;
+            border: 1px solid #d6e2d5;
+            border-radius: 7px;
+            padding: 5px 8px;
+            background: #fff;
+            font-size: 11px;
+            color: var(--green);
+            max-width: 100%;
+            text-align: left
+        }
+
+        .linkage-box .desc-text {
+            font-size: 11px;
+            color: #6a7b6c;
+            line-height: 1.65
+        }
+
+        .flow-bar {
+            display: none;
+            position: sticky;
+            bottom: 10px;
+            z-index: 9;
+            background: #fff;
+            border: 1px solid #cbdacb;
+            box-shadow: 0 10px 30px rgba(25, 45, 32, .1);
+            padding: 11px 14px;
+            border-radius: 13px;
+            align-items: center;
+            gap: 12px;
+            margin: 15px 0 0
+        }
+
+        .flow-bar.active {
+            display: flex
+        }
+
+        .flow-meta {
+            min-width: 0;
+            flex: 1
+        }
+
+        .flow-meta strong {
+            display: block;
+            font-size: 12px
+        }
+
+        .flow-meta span {
+            font-size: 11px;
+            color: var(--muted);
+            display: block
+        }
+
+        .flow-actions {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap
+        }
+
+        .guide-focused {
+            outline: 2px solid #83ac8b;
+            outline-offset: 4px;
+            border-radius: 8px
+        }
+
+        .guide-toast {
+            font-size: 12px;
+            color: var(--warn);
+            min-height: 19px;
+            margin: 3px 0
+        }
+
+        .master-source {
+            white-space: nowrap
+        }
+
+        .master-return-note {
+            padding: 10px 14px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            background: #eff5ed;
+            border: 1px solid #cfdecf;
+            border-radius: 10px;
+            color: #426c4e
+        }
+
+        .master-return-note[hidden] {
+            display: none
+        }
+
+        .master-row.return-highlight {
+            background: #eff7ef
+        }
+
+        .master-row.return-highlight td {
+            border-bottom-color: #cddfc9
+        }
+
+        .summary-return {
+            display: inline-flex;
+            align-items: center;
+            font-size: 11px;
+            color: #5f7566;
+            background: #eef4eb;
+            border-radius: 6px;
+            padding: 2px 6px;
+            margin-left: 5px
+        }
+
+        @media(max-width:800px) {
+            .guidance-steps {
+                grid-template-columns: repeat(2, minmax(0, 1fr))
+            }
+
+            .guide-step {
+                min-height: 105px
+            }
+
+            .linkage-strip {
+                grid-template-columns: 1fr
+            }
+
+            .flow-bar {
+                bottom: 0;
+                border-radius: 12px 12px 0 0
+            }
+        }
+
+        @media(max-width:530px) {
+            .guidance {
+                padding: 15px
+            }
+
+            .guidance-steps {
+                gap: 8px
+            }
+
+            .guide-step {
+                padding: 10px;
+                min-height: 115px
+            }
+
+            .guide-step .step-note {
+                min-height: unset
+            }
+
+            .guide-step:last-child {
+                grid-column: 1/-1;
+                min-height: 80px
+            }
+
+            .flow-bar {
+                display: none;
+                padding: 10px;
+                align-items: stretch;
+                flex-direction: column
+            }
+
+            .flow-bar.active {
+                display: flex
+            }
+
+            .flow-actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr
+            }
+
+            .flow-actions button {
+                width: 100%;
+                padding: 10px 7px
+            }
+
+            .guidance-bottom .guide-main-button {
+                width: 100%
+            }
+        }
+
+        @media print {
+
+            .guidance,
+            .linkage-strip,
+            .flow-bar,
+            .summary-return {
+                display: none !important
+            }
+        }
+
+        /* V6 correctness audit: uniform, restrained presentation, no icons */
+        .quality-panel {
+            border: 1px solid var(--line);
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 19px;
+            margin: 0 0 16px;
+            box-shadow: var(--shadow)
+        }
+
+        .quality-head {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 12px
+        }
+
+        .quality-head h3 {
+            font-size: 16px;
+            margin: 0
+        }
+
+        .quality-head p {
+            font-size: 12px;
+            color: var(--muted);
+            margin: 0
+        }
+
+        .quality-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px
+        }
+
+        .quality-item {
+            border: 1px solid var(--line);
+            background: #fafbf9;
+            border-radius: 9px;
+            padding: 12px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 4px 8px;
+            align-items: start
+        }
+
+        .quality-item strong {
+            font-size: 12px
+        }
+
+        .quality-item span {
+            grid-column: 1/-1;
+            color: #526558;
+            font-size: 12px;
+            line-height: 1.6
+        }
+
+        .quality-item.needs {
+            border-color: #e8d8cd;
+            background: #fdfaf8
+        }
+
+        .quality-item.needs span {
+            color: #936344
+        }
+
+        .quality-link {
+            grid-column: 2;
+            grid-row: 1;
+            border: 0;
+            border-bottom: 1px solid #7b977d;
+            color: #506e58;
+            background: none;
+            padding: 0;
+            font-size: 11px;
+            white-space: nowrap
+        }
+
+        @media(max-width:680px) {
+            .quality-grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media print {
+            .quality-panel {
+                box-shadow: none;
+                break-inside: avoid
+            }
+        }
+
+        .audit-methods {
+            margin: 20px 0 8px;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: #fff;
+            padding: 13px 16px
+        }
+
+        .audit-methods summary {
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            list-style: none
+        }
+
+        .audit-methods summary::-webkit-details-marker {
+            display: none
+        }
+
+        .audit-methods .block-note {
+            margin-top: 12px
+        }
+
+        .audit-methods p {
+            margin: 7px 0
+        }
+
+        .audit-methods a {
+            color: #52705a;
+            text-decoration: underline;
+            text-underline-offset: 2px
+        }
+
+        /* Professional analysis uses the same minimal geometry and tokens as the other six pages. */
+        .tabs {
+            grid-template-columns: repeat(7, minmax(0, 1fr))
+        }
+
+        .advanced-section {
+            margin-bottom: 16px
+        }
+
+        .advanced-section .flex-between {
+            align-items: flex-start;
+            margin-bottom: 15px
+        }
+
+        .advanced-section .desc {
+            margin: 5px 0 8px
+        }
+
+        .advanced-results {
+            margin: 18px 0
+        }
+
+        .advanced-results .table-wrap {
+            margin-top: 17px
+        }
+
+        .advanced-metrics {
+            margin: 17px 0
+        }
+
+        .advanced-section .stat .val {
+            font-size: 16px
+        }
+
+        .advanced-section .progress {
+            margin: 12px 0
+        }
+
+        .file-input {
+            width: 100%;
+            padding: 11px;
+            background: #fbfcf9;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            min-height: 44px;
+            text-align: left
+        }
+
+        .file-input::file-selector-button {
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: var(--green2);
+            padding: 5px 11px;
+            margin-right: 10px;
+            color: var(--ink)
+        }
+
+        @media(max-width:750px) {
+            .tabs {
+                grid-template-columns: repeat(4, minmax(0, 1fr))
+            }
+        }
+
+        @media(max-width:430px) {
+            .tabs {
+                grid-template-columns: repeat(4, minmax(0, 1fr))
+            }
+
+            .advanced-section .flex-between {
+                display: block
+            }
+
+            .advanced-section .flex-between>.btn {
+                margin-top: 8px
+            }
+
+            .advanced-metrics {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        /* 2026-10-28 visual contrast fix: readable links in light and dark system modes. */
+        :root {
+            color-scheme: light;
+        }
+
+        .nav-link,
+        .nav-link strong {
+            color: #26392f;
+            -webkit-text-fill-color: #26392f;
+        }
+
+        .nav-link span {
+            color: #526d5a;
+            -webkit-text-fill-color: #526d5a;
+        }
+
+        .nav-link:hover,
+        .nav-link:focus-visible {
+            background: #edf3ec;
+            border-color: #a9c0ad;
+        }
+
+        .nav-link:focus-visible {
+            outline: 2px solid #315e49;
+            outline-offset: 2px;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>hellow world!! lalala!
+    <div class="shell">
+        <header class="topline">
+            <div class="brand">幸福財務 <small>個人財富管理與財務自由規劃系統 V6</small></div>
+            <div class="topnote">純文字 · 分步填寫 · 即時連動 · 回總表</div>
+        </header>
+        <div class="hero">
+            <div class="eyebrow">MY FINANCIAL PLAN</div>
+            <h1>把財務整理好，把生活過得安心。</h1>
+            <p>先從首頁的填寫導引開始，逐步完成收支、資產、退休與投資。每一步都會即時連動，完成後可一鍵回到綜合總表查看差額。</p>
+        </div>
+        <nav class="tabs" aria-label="財務規劃分頁" role="tablist">
+            <button class="tab active" id="tabbtn-overview" role="tab" aria-controls="tab-overview" aria-selected="true"
+                data-tab="overview">綜合總表</button><button class="tab" id="tabbtn-living" role="tab"
+                aria-controls="tab-living" aria-selected="false" data-tab="living">生活安全</button><button class="tab"
+                id="tabbtn-wealth" role="tab" aria-controls="tab-wealth" aria-selected="false"
+                data-tab="wealth">財富階梯</button><button class="tab" id="tabbtn-rule48" role="tab"
+                aria-controls="tab-rule48" aria-selected="false" data-tab="rule48">4/8 試算</button><button class="tab"
+                id="tabbtn-invest" role="tab" aria-controls="tab-invest" aria-selected="false"
+                data-tab="invest">投資複利</button><button class="tab" id="tabbtn-debt" role="tab" aria-controls="tab-debt"
+                aria-selected="false" data-tab="debt">借貸與正2</button>
+            <button class="tab" type="button" data-tab="analysis" id="tabbtn-analysis" role="tab" aria-selected="false"
+                aria-controls="tab-analysis">專業分析</button>
+        </nav>
 
-    </h1>
+        <main>
+            <section class="page active" id="tab-overview" role="tabpanel" aria-labelledby="tabbtn-overview">
+                <div class="section-head">
+                    <div class="eyebrow">OVERVIEW</div>
+                    <h2>綜合財務規劃總表</h2>
+                    <p>六個模組共用資料。這裡集中顯示真實現況、資金目標、預估差額與借貸情境；修改任何分頁，表格立即同步。</p>
+                </div>
+
+                <div class="guidance" id="planningGuide" aria-label="個人財務規劃填寫導引">
+                    <div class="guidance-head">
+                        <div>
+                            <h3>從這裡開始：五步完成財務規劃</h3>
+                            <p>依順序輸入，每一頁完成後自動前往下一步。已有資料也可以直接進入修改。</p>
+                        </div>
+                        <div class="guidance-score" id="guideScore">0／5 已確認</div>
+                    </div>
+                    <div class="guidance-track" aria-label="填寫完成進度">
+                        <div id="guideProgress"></div>
+                    </div>
+                    <div class="guidance-steps" id="guideSteps"></div>
+                    <div class="guidance-bottom"><span class="fine" id="guideHint">請先從每月收入與食衣住行開始。</span><button
+                            class="btn primary guide-main-button" type="button" id="guideStart">開始第一步</button></div>
+                </div>
+                <div class="master-brief" aria-label="綜合財務規劃關鍵結果">
+                    <div class="brief-card">
+                        <div class="brief-title">每月可用結餘</div>
+                        <div class="brief-value" id="masterCashflow">—</div>
+                        <div class="brief-expl">扣除生活費、既有月付及定期投資</div>
+                    </div>
+                    <div class="brief-card">
+                        <div class="brief-title">實際淨資產</div>
+                        <div class="brief-value" id="masterNetWorth">—</div>
+                        <div class="brief-expl">不含借款投資的假設成果</div>
+                    </div>
+                    <div class="brief-card">
+                        <div class="brief-title">財務自由資金缺口</div>
+                        <div class="brief-value" id="masterRetireGap">—</div>
+                        <div class="brief-expl">退休目標－預估投資期末資產</div>
+                    </div>
+                </div>
+                <div class="quality-panel" aria-label="財務規劃資料品質與可行性檢核">
+                    <div class="quality-head">
+                        <h3>計畫可行性檢核</h3>
+                        <p>依已輸入資料即時提示，不代表投資建議或保證達標。</p>
+                    </div>
+                    <div id="planChecks" class="quality-grid" aria-live="polite"></div>
+                </div>
+                <div class="master-return-note" id="masterReturnNote" role="status" aria-live="polite" hidden>
+                    已返回綜合總表，資料已即時更新。</div>
+                <div class="master" id="financialMasterTable">
+                    <div class="master-header">
+                        <div>
+                            <h3>一頁式綜合財務規劃總表</h3>
+                            <p>先依上方導引完成填寫。表格將自動彙整，最後一欄可直接前往對應欄位修改。</p>
+                        </div>
+                        <div class="master-actions"><button class="btn primary" id="exportMaster" type="button">匯出總表
+                                CSV</button><button class="btn" id="printMaster" type="button">列印總表</button></div>
+                    </div>
+                    <div class="master-table-wrap">
+                        <table class="master-table" aria-label="個人綜合財務規劃總表">
+                            <colgroup>
+                                <col>
+                                <col>
+                                <col>
+                                <col>
+                                <col>
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th scope="col">規劃項目</th>
+                                    <th scope="col">目前／投入</th>
+                                    <th scope="col">目標／預測</th>
+                                    <th scope="col">差額／評估</th>
+                                    <th scope="col">資料來源</th>
+                                </tr>
+                            </thead>
+                            <tbody id="masterTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="master-foot">資料類型：生活費、資產、負債為填寫現況；複利、4/8 與新增借款均為假設。4/8 是 4% 提領率與 8% 年化報酬的自訂情境，不是通用的「48
+                        法則」。現金、投資與房產流動性不同；借款模擬和未來收益不會計入實際淨資產。所有報酬情境未考慮市場報酬順序與稅費。</div>
+                </div>
+                <div class="panel plan-panel" id="financialRoadmap">
+                    <div class="flex-between">
+                        <div>
+                            <h3>年度財務路線圖</h3>
+                            <p class="desc">使用同一筆現有投資本金、每月投入和各項假設報酬率。</p>
+                        </div><button class="btn" data-go="invest" type="button">調整投資資料</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="timeline-table">
+                            <thead>
+                                <tr>
+                                    <th>距今年數</th>
+                                    <th>累積投入本金</th>
+                                    <th>預估投資資產</th>
+                                    <th>投資損益</th>
+                                    <th>當年退休目標</th>
+                                    <th>目標差額</th>
+                                </tr>
+                            </thead>
+                            <tbody id="masterTimeline"></tbody>
+                        </table>
+                    </div>
+                    <div class="block-note">
+                        各年的退休目標以當年通膨後生活費與設定提領率估算；投資資產只計入金融投資及定期投入，不包含房屋增值、實際現金或借款投資情境。金額未計稅費、未來收入變動與投資波動順序。</div>
+                    <div class="plan-status" id="masterPriority" aria-live="polite">請先輸入收入與生活費。</div>
+                    <div class="inline-actions" style="margin-top:10px"><button class="btn primary" id="priorityAction"
+                            type="button" data-go="living" data-focus="income">立即處理優先事項</button></div>
+                </div>
+                <div class="overview-rest-label">各分頁快速導覽</div>
+                <div class="cards-4">
+                    <div class="metric major">
+                        <div class="cap">實際淨資產</div>
+                        <div class="big" id="ovNet">0 元</div>
+                        <div class="sub">資產減負債，不含假設借款</div>
+                    </div>
+                    <div class="metric">
+                        <div class="cap">每月必要支出</div>
+                        <div class="big" id="ovSpend">0 元</div>
+                        <div class="sub">生活費＋年費用攤提</div>
+                    </div>
+                    <div class="metric">
+                        <div class="cap">10 年財務安全目標</div>
+                        <div class="big" id="ovSafety">0 元</div>
+                        <div class="sub">每月必要支出 × 12 × 10</div>
+                    </div>
+                    <div class="metric">
+                        <div class="cap">退休財務自由目標</div>
+                        <div class="big" id="ovFreedom">0 元</div>
+                        <div class="sub">考慮退休前通膨與提領率</div>
+                    </div>
+                </div>
+                <div class="sectiongap"></div>
+                <div class="grid">
+                    <div class="panel">
+                        <h3>現在的現金流</h3>
+                        <p class="desc">實際收入、支出與已設定的每月投資計畫連動。</p>
+                        <div class="kv"><span>每月收入</span><strong id="ovIncome">0 元</strong></div>
+                        <div class="kv"><span>每月生活必要支出</span><strong id="ovExpense">0 元</strong></div>
+                        <div class="kv"><span>既有貸款月付</span><strong id="ovExistingPay">0 元</strong></div>
+                        <div class="kv"><span>分項投資每月投入</span><strong id="ovContribution">0 元</strong></div>
+                        <div class="kv"><span>擬議新借款月付（如已勾選）</span><strong id="ovLoanPay">0 元</strong></div>
+                        <div class="result" style="margin-top:15px">
+                            <div class="label-title">每月可運用餘額</div>
+                            <div class="value" id="ovSurplus">0 元</div><small>負數表示目前設定的計畫超過收入。</small>
+                        </div>
+                        <div class="overall-status" id="ovHealth">尚未填入完整的財務資料。</div>
+                    </div>
+                    <div class="panel">
+                        <h3>財務自由進度</h3>
+                        <p class="desc">退休目標與投資現值會依各分頁設定重新計算。</p>
+                        <div class="kv"><span>目前財富階梯</span><strong id="ovStage">第 1 階</strong></div>
+                        <div class="kv"><span>退休目標</span><strong id="ovTarget">0 元</strong></div>
+                        <div class="kv"><span>投資期末預估</span><strong id="ovFuture">0 元</strong></div>
+                        <div class="kv"><span>距退休目標還差</span><strong id="ovGap">0 元</strong></div>
+                        <div class="label-title" style="margin-top:18px">退休目標完成率（預估）</div>
+                        <div class="progress"><span id="ovProgress"></span></div>
+                        <div class="flex-between fine"><span>已投入金融資產＋未來分項定期投入</span><strong id="ovPct">0%</strong></div>
+                        <div class="note">退休累積資產採「投資複利」的分項報酬假設；4/8 試算的 8% 是另一個比較情境。兩者會清楚分開，不會混為實際報酬。</div>
+                    </div>
+                    <div class="panel wide">
+                        <h3>需要修改資料？</h3>
+                        <p class="desc">進入任一分頁修改數字，回到綜合總表就能看到最新的完整規劃結果。</p>
+                        <div class="list-nav"><button class="nav-link" data-go="living"><strong>生活安全</strong><span
+                                    id="routeLiving">檢查月支出與安全目標</span></button><button class="nav-link"
+                                data-go="wealth"><strong>財富階梯</strong><span
+                                    id="routeWealth">查看現有淨資產與階段</span></button><button class="nav-link"
+                                data-go="rule48"><strong>4/8 試算</strong><span
+                                    id="route48">檢查退休資金缺口</span></button><button class="nav-link"
+                                data-go="invest"><strong>投資複利</strong><span
+                                    id="routeInvest">估算定期投入與累積收益</span></button><button class="nav-link"
+                                data-go="debt"><strong>借貸與正2</strong><span
+                                    id="routeDebt">試算還款與借貸投資差額</span></button><button class="nav-link"
+                                data-go="overview"><strong>資料保護</strong><span>瀏覽器本機儲存、匯出與匯入</span></button></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page" id="tab-living" role="tabpanel" aria-labelledby="tabbtn-living">
+                <div class="section-head">
+                    <div class="eyebrow">LIVING & SAFETY</div>
+                    <h2>生活安全</h2>
+                    <p>輸入每月支出，一次更新十年生活安全目標、退休目標與現金流。</p>
+                </div>
+                <div class="linkage-strip">
+                    <div class="linkage-box"><b>從這裡填寫</b><span class="desc-text">這裡是收入與必要生活費的唯一輸入處；不必到其他頁重複填寫。</span>
+                    </div>
+                    <div class="linkage-box"><b>會自動更新</b>
+                        <div><button class="data-jump" data-go="overview">綜合總表</button><button class="data-jump"
+                                data-go="rule48" data-focus="yearsToRetire">退休目標</button><button class="data-jump"
+                                data-go="invest" data-focus="investRows">投資後現金流</button></div>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="panel">
+                        <h3>每月收支資料</h3>
+                        <p class="desc">這些欄位是系統唯一的生活支出資料來源。</p>
+                        <div class="fields">
+                            <label class="field"><span>每月稅後收入</span>
+                                <div class="entry"><input type="number" min="0" step="100" data-key="income"
+                                        value="0"><span class="unit">元</span></div>
+                            </label><label class="field"><span>食</span>
+                                <div class="entry"><input type="number" min="0" step="100" data-key="food"
+                                        value="0"><span class="unit">元</span></div>
+                            </label>
+                            <label class="field"><span>衣</span>
+                                <div class="entry"><input type="number" min="0" step="100" data-key="clothing"
+                                        value="0"><span class="unit">元</span></div>
+                            </label><label class="field"><span>住（房租或每月住宅支出）</span>
+                                <div class="entry"><input type="number" min="0" step="100" data-key="housing"
+                                        value="0"><span class="unit">元</span></div>
+                            </label>
+                            <label class="field"><span>行</span>
+                                <div class="entry"><input type="number" min="0" step="100" data-key="transport"
+                                        value="0"><span class="unit">元</span></div>
+                            </label><label class="field"><span>其他</span>
+                                <div class="entry"><input type="number" min="0" step="100" data-key="other"
+                                        value="0"><span class="unit">元</span></div>
+                            </label>
+                            <label class="field"><span>每年非固定必要支出</span>
+                                <div class="entry"><input type="number" min="0" step="100" data-key="irregularAnnual"
+                                        value="0"><span class="unit">元</span></div>
+                            </label><label class="field"><span>既有貸款每月還款</span>
+                                <div class="entry"><input type="number" min="0" step="100" data-key="existingMonthlyPay"
+                                        value="0"><span class="unit">元</span></div>
+                            </label>
+                            <div class="hint">房租可填在「住」；若已在「住」計入房貸月付款，請勿再填入「既有貸款每月還款」，避免每月現金流重複扣除。房屋估值與剩餘貸款本金請至「財富階梯」填寫。
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <h3>財務安全結果</h3>
+                        <p class="desc">任何支出修改都會立刻重算，不需再按送出。</p>
+                        <div class="result">
+                            <div class="label-title">10 年財務安全數字</div>
+                            <div class="value" id="liSafety">0 元</div><small>每月必要支出 × 12 × 10 年（未計通膨的名目累積金額）</small>
+                        </div>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="label">每月生活費合計</div>
+                                <div class="val" id="liSpend">0 元</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">年支出攤提／月</div>
+                                <div class="val" id="liIrregular">0 元</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">每月必要支出</div>
+                                <div class="val" id="liEssential">0 元</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">緊急預備金目標</div>
+                                <div class="val" id="liEmergency">0 元</div>
+                            </div>
+                        </div>
+                        <div class="kv" style="margin-top:14px"><span>考慮每年通膨的十年總生活費（來自 4/8 設定）</span><strong
+                                id="liSafetyInflated">0 元</strong></div>
+                        <div class="subheading">資金進度</div>
+                        <div class="kv"><span>可用現金（來自財富階梯）</span><strong id="liCash">0 元</strong></div>
+                        <div class="kv"><span>十年名目目標－現有金融資產（含波動風險）</span><strong id="liGap">0 元</strong></div>
+                        <div class="kv"><span>緊急預備金完成率</span><strong id="liEmergencyPct">0%</strong></div>
+                        <div class="progress"><span id="liEmergencyProgress"></span></div>
+                        <div class="fields" style="margin-top:18px"><label class="field"><span>預備金希望準備幾個月</span>
+                                <div class="entry"><input type="number" min="1" max="60" step="1"
+                                        data-key="reserveMonths"><span class="unit">月</span></div>
+                            </label>
+                            <div class="read-only">
+                                <div class="minor">分項每月投資投入（投資頁連動）</div><strong id="liMonthlyInvest">0 元</strong>
+                            </div>
+                        </div>
+                        <div class="note" id="liRisk">生活安全與投資每月現金流已連動。</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page" id="tab-wealth" role="tabpanel" aria-labelledby="tabbtn-wealth">
+                <div class="section-head">
+                    <div class="eyebrow">WEALTH LADDER</div>
+                    <h2>財富階梯</h2>
+                    <p>資產減負債，顯示真實淨資產、目前位置與距離下一階的金額。</p>
+                </div>
+                <div class="linkage-strip">
+                    <div class="linkage-box"><b>資料關聯</b><span
+                            class="desc-text">實際投資本金會帶到複利與退休試算；現況淨資產不含尚未執行的借貸投資假設。</span></div>
+                    <div class="linkage-box"><b>會自動更新</b>
+                        <div><button class="data-jump" data-go="overview">總表淨資產</button><button class="data-jump"
+                                data-go="invest">投資期初本金</button><button class="data-jump" data-go="rule48">4/8
+                                期初本金</button></div>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="panel">
+                        <h3>實際持有的資產負債</h3>
+                        <p class="desc">請填現況，不要把其他分頁的假設投資收益填進來。</p>
+                        <div class="fields"><label class="field"><span>現金與活存</span>
+                                <div class="entry"><input type="number" min="0" step="1000" data-key="cash"><span
+                                        class="unit">元</span></div>
+                            </label><label class="field"><span>現有投資金融資產</span>
+                                <div class="entry"><input type="number" min="0" step="1000"
+                                        data-key="investAssets"><span class="unit">元</span></div>
+                            </label><label class="field"><span>房屋目前估值</span>
+                                <div class="entry"><input type="number" min="0" step="1000"
+                                        data-key="propertyValue"><span class="unit">元</span></div>
+                            </label><label class="field"><span>其他資產</span>
+                                <div class="entry"><input type="number" min="0" step="1000" data-key="otherAssets"><span
+                                        class="unit">元</span></div>
+                            </label><label class="field"><span>現有房貸剩餘本金</span>
+                                <div class="entry"><input type="number" min="0" step="1000"
+                                        data-key="existingMortgage"><span class="unit">元</span></div>
+                            </label><label class="field"><span>其他現有負債剩餘本金</span>
+                                <div class="entry"><input type="number" min="0" step="1000"
+                                        data-key="existingLiabilities"><span class="unit">元</span></div>
+                            </label>
+                            <div class="hint">本區的「現有投資金融資產」會直接帶入投資複利與 4/8 試算作為期初本金。借貸頁的新增借款只是情境，除非真的借款並持有資產，否則不在此自動加計。
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <h3>我的財富階段</h3>
+                        <p class="desc">六階模型採原著美元門檻，以 1 美元約 30 元台幣的固定示意換算，並非即時匯率；淨資產包含房屋等不易變現資產，不等於可用於退休提領的金融資產。</p>
+                        <div class="result">
+                            <div class="label-title">實際淨資產</div>
+                            <div class="value" id="weNet">0 元</div><small id="weStageText">第 1 階｜建立基礎</small>
+                        </div>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="label">資產總額</div>
+                                <div class="val" id="weAsset">0 元</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">負債總額</div>
+                                <div class="val" id="weLiability">0 元</div>
+                            </div>
+                        </div>
+                        <div class="ladder" id="wealthSteps"></div>
+                        <div class="kv"><span>目前階段</span><strong id="weCurrent">第 1 階</strong></div>
+                        <div class="kv"><span>下一階段門檻</span><strong id="weNext">30 萬元</strong></div>
+                        <div class="kv"><span>距下一階仍需增加淨資產</span><strong id="weToNext">0 元</strong></div>
+                        <div class="label-title" style="margin-top:16px">本階段進度</div>
+                        <div class="progress"><span id="weProgress"></span></div>
+                        <div class="fine">此六階使用台幣整數門檻（30 萬、300 萬、3,000 萬、3 億、30 億），作為便於規劃的近似分級。非即時匯率換算的正式分級。</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page" id="tab-rule48" role="tabpanel" aria-labelledby="tabbtn-rule48">
+                <div class="section-head">
+                    <div class="eyebrow">4 / 8 SCENARIO</div>
+                    <h2>4% 提領與 8% 投資情境</h2>
+                    <p>4% 是可調整的退休起始提領率，8% 是可調整的投資報酬假設，不是保證收益或正式「48 法則」。</p>
+                </div>
+                <div class="linkage-strip">
+                    <div class="linkage-box"><b>已連動的資料來源</b>
+                        <div><button class="data-jump" data-go="living" data-focus="food">生活費 <span
+                                    id="linkLivingExpense">—</span></button><button class="data-jump" data-go="wealth"
+                                data-focus="investAssets">現有投資 <span id="linkStartingInvest">—</span></button><button
+                                class="data-jump" data-go="invest" data-focus="investRows">每月投入 <span
+                                    id="linkMonthlyInvest">—</span></button></div>
+                    </div>
+                    <div class="linkage-box"><b>本頁只需補充</b><span class="desc-text">退休年數、通膨、提領率與固定收入，計算結果自動回到綜合總表。</span>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="panel">
+                        <h3>退休規劃假設</h3>
+                        <p class="desc">生活費、既有資產與每月投入直接採其他分頁資料。</p>
+                        <div class="fields"><label class="field"><span>距離退休還有幾年</span>
+                                <div class="entry"><input type="number" min="0" max="70" step="1"
+                                        data-key="yearsToRetire"><span class="unit">年</span></div>
+                            </label><label class="field"><span>預估每年通膨率</span>
+                                <div class="entry"><input type="number" min="-5" max="30" step=".1"
+                                        data-key="inflation"><span class="unit">%</span></div>
+                            </label><label class="field"><span>退休初始提領率</span>
+                                <div class="entry"><input type="number" min="0.5" max="20" step=".1"
+                                        data-key="withdrawRate"><span class="unit">%</span></div>
+                            </label><label class="field"><span>4/8 情境年化報酬假設</span>
+                                <div class="entry"><input type="number" min="-90" max="100" step=".5"
+                                        data-key="scenarioRate"><span class="unit">%</span></div>
+                            </label><label class="field"><span>退休後每月固定收入（以退休當時幣值）</span>
+                                <div class="entry"><input type="number" min="0" step="100" data-key="pension"><span
+                                        class="unit">元</span></div>
+                            </label><label class="field"><span>提領試算期間</span>
+                                <div class="entry"><input type="number" min="1" max="60" step="1"
+                                        data-key="withdrawYears"><span class="unit">年</span></div>
+                            </label><label class="field"><span>提領期間假設年化報酬</span>
+                                <div class="entry"><input type="number" min="-90" max="100" step=".5"
+                                        data-key="decumRate"><span class="unit">%</span></div>
+                            </label>
+                            <div class="read-only">
+                                <div class="minor">目前金融投資資產（財富階梯連動）</div><strong id="rExisting">0 元</strong>
+                            </div>
+                            <div class="read-only">
+                                <div class="minor">每月投入（投資複利連動）</div><strong id="rMonthly">0 元</strong>
+                            </div>
+                            <div class="read-only">
+                                <div class="minor">目前必要月支出（生活安全連動）</div><strong id="rSpend">0 元</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <h3>退休目標與試算結果</h3>
+                        <p class="desc">與逐項投資年報酬試算並列，清楚辨識不同假設。</p>
+                        <div class="result">
+                            <div class="label-title">退休時參考資產目標（依初始提領率）</div>
+                            <div class="value" id="rTarget">0 元</div><small>退休時生活費扣固定收入後，乘 12 再除以提領率</small>
+                        </div>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="label">4/8 情境期末資產</div>
+                                <div class="val" id="rScenario">0 元</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">逐項投資期末資產</div>
+                                <div class="val" id="rPortfolio">0 元</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">逐項投資資產缺口</div>
+                                <div class="val" id="rGap">0 元</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">預估退休時每月支出</div>
+                                <div class="val" id="rFutureSpend">0 元</div>
+                            </div>
+                        </div>
+                        <div class="subheading">退休後每月提領情境（不是保證可領）</div>
+                        <div class="kv"><span>固定名目月領（不隨通膨增加）</span><strong id="rMonthlyPayout">0 元</strong></div>
+                        <div class="kv"><span>首月可領（未來每月按通膨增加）</span><strong id="rMonthlyIndexed">0 元</strong></div>
+                        <div class="kv"><span>通膨調整首月提領＋退休固定收入</span><strong id="rPayoutPlus">0 元</strong></div>
+                        <div class="kv"><span>72 法則：翻倍約需</span><strong id="r72">—</strong></div>
+                        <div class="label-title" style="margin-top:17px">逐項投資的財務自由完成率</div>
+                        <div class="progress"><span id="rProgress"></span></div>
+                        <div class="fine" id="rPct">0%</div>
+                        <div class="note">4% 是退休初始提領率的歷史研究概念，不是每年固定獲利 4%。4/8 只代表以 4% 提領率和 8%
+                            假設報酬並列試算，不是標準保證公式。固定月領不調整通膨；另一組為按假設通膨逐月增加的「首月可提領」，但兩者都使用平滑固定報酬，未納入稅費、報酬順序風險與年金變化。</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page" id="tab-invest" role="tabpanel" aria-labelledby="tabbtn-invest">
+                <div class="section-head">
+                    <div class="eyebrow">COMPOUND INTEREST</div>
+                    <h2>投資複利</h2>
+                    <p>每一項可設定不同每月投入與年化報酬，立即更新 4/8、總覽與每月現金流。</p>
+                </div>
+                <div class="linkage-strip">
+                    <div class="linkage-box"><b>已連動的期初本金</b>
+                        <div><button class="data-jump" data-go="wealth" data-focus="investAssets">來自財富階梯 <span
+                                    id="linkPortfolioInitial">—</span></button><button class="data-jump"
+                                data-go="rule48" data-focus="yearsToRetire">退休年數 <span
+                                    id="linkInvestHorizon">—</span></button></div>
+                    </div>
+                    <div class="linkage-box"><b>會自動更新</b>
+                        <div><button class="data-jump" data-go="overview">總表月結餘</button><button class="data-jump"
+                                data-go="rule48">退休資金差額</button></div>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="panel">
+                        <h3>每月分項投資</h3>
+                        <p class="desc">報酬率是你的假設值。期初本金由「財富階梯」的現有金融投資資產統一提供。</p>
+                        <div id="investRows"></div>
+                        <div class="inline-actions"><button class="btn primary" type="button"
+                                id="addInvestment">新增投資項目</button><button class="btn" type="button"
+                                id="clearInvestments">清空每月投入</button></div>
+                        <div class="subheading">共同資料與假設</div>
+                        <div class="fields">
+                            <div class="read-only">
+                                <div class="minor">已持有投資本金</div><strong id="iStarting">0 元</strong>
+                            </div><label class="field"><span>已持有資產假設年化報酬</span>
+                                <div class="entry"><input type="number" min="-90" max="100" step=".5"
+                                        data-key="existingInvestRate"><span class="unit">%</span></div>
+                            </label><label class="field"><span>投資年數（與 4/8 共用）</span>
+                                <div class="entry"><input type="number" min="0" max="70" step="1"
+                                        data-key="yearsToRetire"><span class="unit">年</span></div>
+                            </label>
+                            <div class="read-only">
+                                <div class="minor">可用月結餘（含分項投資支出）</div><strong id="iSurplus">0 元</strong>
+                            </div>
+                            <div class="hint">假設每月月底投入，每月以「有效年化報酬」換算複利。系統不抓取即時行情，也不將投資項目未來結果算入現況淨資產。</div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <h3>未來資產與收益</h3>
+                        <p class="desc">從財富階梯的金融投資資產出發，加上分項每月投入。</p>
+                        <div class="result">
+                            <div class="label-title">投資期末預估資產</div>
+                            <div class="value" id="iFuture">0 元</div><small id="iYears">距退休 20 年</small>
+                        </div>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="label">每月投入合計</div>
+                                <div class="val" id="iMonthly">0 元</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">總投入本金</div>
+                                <div class="val" id="iPrincipal">0 元</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">複利收益／損失</div>
+                                <div class="val" id="iProfit">0 元</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">退休目標差額</div>
+                                <div class="val" id="iGoalGap">0 元</div>
+                            </div>
+                        </div>
+                        <div class="subheading">期末資產成長趨勢</div>
+                        <div class="chart" id="investmentChart" role="img" aria-label="逐年預估資產圖表"></div>
+                        <div class="chart-legend"><span>現在</span><span id="chartEndYear">退休時</span></div>
+                        <div class="subheading">年度資產明細</div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>年數</th>
+                                        <th>累計本金</th>
+                                        <th>預估資產</th>
+                                        <th>投資損益</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="investmentYearRows"></tbody>
+                            </table>
+                        </div>
+                        <div class="inline-actions"><button class="btn" type="button" id="downloadAnnual">匯出年度
+                                CSV</button></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page" id="tab-debt" role="tabpanel" aria-labelledby="tabbtn-debt">
+                <div class="section-head">
+                    <div class="eyebrow">BORROWING & LEVERAGE</div>
+                    <h2>借貸與正2</h2>
+                    <p>區分房貸／信貸月付與借款投資情境。新增借款不會自動視作真實資產或負債。</p>
+                </div>
+                <div class="linkage-strip">
+                    <div class="linkage-box"><b>已連動的資料來源</b>
+                        <div><button class="data-jump" data-go="living" data-focus="income">每月收入 <span
+                                    id="linkIncome">—</span></button><button class="data-jump" data-go="rule48"
+                                data-focus="yearsToRetire">比較年數 <span id="linkLoanHorizon">—</span></button></div>
+                    </div>
+                    <div class="linkage-box"><b>借貸只是模擬</b><span
+                            class="desc-text">擬議貸款不會直接算進現有負債。勾選月付納入現金流後，總表才會顯示壓力情境。</span></div>
+                </div>
+                <div class="grid">
+                    <div class="panel">
+                        <h3>借款與投資配置</h3>
+                        <p class="desc">請用預估利率作情境分析，不代表銀行核貸條件。</p>
+                        <div class="fields"><label class="field"><span>資金方式</span><select data-key="loanKind">
+                                    <option value="none">不借款</option>
+                                    <option value="mortgage">房貸增貸（新增部分）</option>
+                                    <option value="personal">信用貸款</option>
+                                </select></label><label class="field"><span>新增貸款本金</span>
+                                <div class="entry"><input type="number" min="0" step="1000" data-key="loanAmount"><span
+                                        class="unit">元</span></div>
+                            </label><label class="field"><span>貸款年利率</span>
+                                <div class="entry"><input type="number" min="0" max="100" step=".05"
+                                        data-key="loanRate"><span class="unit">%</span></div>
+                            </label><label class="field"><span>本息攤還年數</span>
+                                <div class="entry"><input type="number" min="1" max="40" step="1"
+                                        data-key="loanYears"><span class="unit">年</span></div>
+                            </label><label class="field"><span>一次費用（開辦等）</span>
+                                <div class="entry"><input type="number" min="0" step="100" data-key="loanFee"><span
+                                        class="unit">元</span></div>
+                            </label><label class="field"><span>搭配的自有資金</span>
+                                <div class="entry"><input type="number" min="0" step="1000" data-key="loanOwn"><span
+                                        class="unit">元</span></div>
+                            </label><label class="field full"><span>借款後的投資策略</span><select data-key="loanStrategy">
+                                    <option value="normal">100% 一般 ETF</option>
+                                    <option value="cash">50% 正2 ＋ 50% 現金</option>
+                                    <option value="market">50% 正2 ＋ 50% 一般 ETF</option>
+                                </select></label><label class="field"><span>一般 ETF 假設年化報酬</span>
+                                <div class="entry"><input type="number" min="-90" max="100" step=".5"
+                                        data-key="normalRate"><span class="unit">%</span></div>
+                            </label><label class="field"><span>正2 ETF 假設年化報酬</span>
+                                <div class="entry"><input type="number" min="-90" max="100" step=".5"
+                                        data-key="doubleRate"><span class="unit">%</span></div>
+                            </label><label class="field"><span>現金假設年利率</span>
+                                <div class="entry"><input type="number" min="-20" max="100" step=".1"
+                                        data-key="cashRate"><span class="unit">%</span></div>
+                            </label>
+                            <div class="read-only">
+                                <div class="minor">預計持有年數（與投資頁共用）</div><strong id="dHorizon">20 年</strong>
+                            </div><label class="field full checkbox"><input type="checkbox"
+                                    data-key="includeLoanPayment">把這筆「擬議新增借款」月付納入生活現金流（僅做壓力評估）</label>
+                            <div class="hint warn">正2
+                                追求指數「單日」兩倍表現，不能把大盤多年年化報酬直接乘二。本頁的年化報酬是簡化假設。新增的「專業分析」頁可匯入實際每日調整後價格，比較正2逐日路徑、再平衡及交易成本。沒有實際歷史資料時，不會產生假回測結果。
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <h3>還款、風險與真正賺賠</h3>
+                        <p class="desc">在相同每月資金負擔下，比較借款與不借款的期末淨資產。</p>
+                        <div class="result">
+                            <div class="label-title">新增貸款最高預計月付</div>
+                            <div class="value" id="dPayment">0 元</div><small>固定／變動利率、額外還本與寬限期均已納入逐月模型；不含既有貸款</small>
+                        </div>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="label">全期總利息</div>
+                                <div class="val" id="dInterest">0 元</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">投資時點剩餘貸款</div>
+                                <div class="val" id="dBalance">0 元</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">借款投資的期末淨值</div>
+                                <div class="val" id="dLever">0 元</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">不借款的等現金流投資</div>
+                                <div class="val" id="dBaseline">0 元</div>
+                            </div>
+                        </div>
+                        <div class="subheading">借貸投資與不借貸比較</div>
+                        <div class="kv"><span>相對不借款的額外賺賠</span><strong id="dDifference">0 元</strong></div>
+                        <div class="kv"><span>初始部位的價差－已付利息與費用（不含再投入）</span><strong id="dProfit">0 元</strong></div>
+                        <div class="kv"><span>期末前累計已付利息</span><strong id="dPaidInterest">0 元</strong></div>
+                        <div class="kv"><span>期末投資組合（未扣貸款）</span><strong id="dGross">0 元</strong></div>
+                        <div class="kv"><span>新增月付占稅後收入</span><strong id="dPayRatio">0%</strong></div>
+                        <div class="kv"><span>既有＋擬議新增月付占收入（無論是否納入總表）</span><strong id="dTotalPayRatio">0%</strong></div>
+                        <div class="kv"><span>約當初始大盤曝險</span><strong id="dExposure">100%</strong></div>
+                        <div class="subheading">期末簡化跌幅壓力測試（非歷史回測）</div>
+                        <div class="scenario-grid">
+                            <div class="scenario"><span>普通 ETF 下跌 30%</span><b id="dShock">0 元</b><span>正2 部位假設同時下跌
+                                    60%，現金不變，顯示淨值</span></div>
+                            <div class="scenario"><span>壓力後，與原方案的資產減少</span><b id="dShockLoss">0
+                                    元</b><span>用相同投資組合期末下跌比較</span></div>
+                            <div class="scenario"><span>相對不借款基準差額</span><b id="dShockDiff">0 元</b><span>基準也承受普通 ETF
+                                    同樣下跌</span></div>
+                        </div>
+                        <div class="note" id="dWarning">貸款投資會同時承擔償債、利率、波動與流動性風險。未計稅費、追繳、實際融資限制、變動利率與特殊還款條件。</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page" id="tab-analysis" role="tabpanel" aria-labelledby="tabbtn-analysis">
+                <div class="section-head">
+                    <div class="eyebrow">RISK ANALYSIS</div>
+                    <h2>專業風險分析</h2>
+                    <p>所有模組與既有生活安全、投資複利、借貸頁共用資金與退休年數，但將歷史事實與假設機率明確分開。</p>
+                </div>
+                <div class="linkage-strip">
+                    <div class="linkage-box"><b>共用資產與收入</b>
+                        <div><button class="data-jump" data-go="wealth" data-focus="investAssets">實際投資資產 <span
+                                    id="advAssetLink">—</span></button><button class="data-jump" data-go="invest"
+                                data-focus="investRows">每月投入 <span id="advMonthlyLink">—</span></button></div>
+                    </div>
+                    <div class="linkage-box"><b>共同退休與貸款假設</b>
+                        <div><button class="data-jump" data-go="rule48" data-focus="yearsToRetire">距退休 <span
+                                    id="advRetireLink">—</span></button><button class="data-jump" data-go="debt"
+                                data-focus="loanAmount">貸款本金 <span id="advLoanLink">—</span></button></div>
+                    </div>
+                </div>
+                <div class="panel advanced-section" id="advancedMonte">
+                    <div class="flex-between">
+                        <div>
+                            <h3>01　蒙地卡羅退休模擬</h3>
+                            <p class="desc">在波動與報酬順序不確定下，模擬退休後逐月提領直到資金耗盡的機率。不是退休保證。</p>
+                        </div><button class="btn" type="button" data-go="rule48" data-focus="withdrawRate">退休假設 ·
+                            修改</button>
+                    </div>
+                    <div class="fields">
+                        <label class="field"><span>模擬退休期初資產來源</span><select data-key="mcSource">
+                                <option value="future">連動投資複利的退休時預估資產</option>
+                                <option value="current">使用現有金融投資資產</option>
+                            </select></label>
+                        <label class="field"><span>退休後模擬年數</span>
+                            <div class="entry"><input type="number" min="1" max="60" step="1" data-key="mcYears"><span
+                                    class="unit">年</span></div>
+                        </label>
+                        <label class="field"><span>退休投資預期名目年報酬（算術假設）</span>
+                            <div class="entry"><input type="number" min="-90" max="100" step=".5"
+                                    data-key="mcMean"><span class="unit">%</span></div>
+                        </label>
+                        <label class="field"><span>報酬年化波動率</span>
+                            <div class="entry"><input type="number" min="0" max="100" step=".5" data-key="mcVol"><span
+                                    class="unit">%</span></div>
+                        </label>
+                        <label class="field"><span>每年投資費用率（另扣）</span>
+                            <div class="entry"><input type="number" min="0" max="20" step=".1" data-key="mcFee"><span
+                                    class="unit">%</span></div>
+                        </label>
+                        <label class="field"><span>模擬路徑數</span><select data-key="mcTrials">
+                                <option value="500">500</option>
+                                <option value="1000">1,000</option>
+                                <option value="2000">2,000</option>
+                                <option value="5000">5,000</option>
+                            </select></label>
+                        <label class="field"><span>固定亂數種子（可重現結果）</span>
+                            <div class="entry"><input type="number" min="1" step="1" data-key="mcSeed"><span
+                                    class="unit">值</span></div>
+                        </label>
+                        <label class="field checkbox"><input type="checkbox"
+                                data-key="mcPensionIndexed">退休固定收入也隨通膨調整（預設不調整）</label>
+                    </div>
+                    <div class="inline-actions"><button class="btn primary" type="button"
+                            id="runMonte">執行蒙地卡羅</button><button class="btn" type="button" id="exportMonte">匯出逐年分位數
+                            CSV</button></div>
+                    <div class="advanced-results" aria-live="polite">
+                        <div class="grid-3">
+                            <div class="stat">
+                                <div class="label">模擬資金存續比例</div>
+                                <div class="val" id="mcSuccess">尚未模擬</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">退休期初投資資產</div>
+                                <div class="val" id="mcOpening">—</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">退休起始月支出差額</div>
+                                <div class="val" id="mcExpense">—</div>
+                            </div>
+                        </div>
+                        <div class="progress"><span id="mcBar"></span></div>
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="label">期末資產 P10（較差 10% 情境）</div>
+                                <div class="val" id="mcP10">—</div>
+                            </div>
+                            <div class="stat">
+                                <div class="label">期末資產 P50（中位數）</div>
+                                <div class="val" id="mcP50">—</div>
+                            </div>
+                        </div>
+                        <p class="fine" id="mcNote">先確認生活費與退休假設，再按「執行蒙地卡羅」。</p>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>退休後年數</th>
+                                        <th>P10 期末資產</th>
+                                        <th>P50 期末資產</th>
+                                        <th>P90 期末資產</th>
+                                        <th>未耗盡占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mcYearRows">
+                                    <tr>
+                                        <td colspan="5">尚無結果</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="hint">
+                        採用獨立每月對數常態報酬路徑；用有效年化預期報酬及年化波動率生成月度回報，投資費用每月扣除。每月月初提領，必要支出按通膨逐月成長；固定收入預設不成長。未納入稅、黑天鵝、尾部厚尾、股票債券相關性及動態資產配置。結果僅是使用者假設下的模擬占比，不是客觀退休成功率。
+                    </div>
+                </div>
+                <div class="panel advanced-section" id="advancedBacktest">
+                    <div class="flex-between">
+                        <div>
+                            <h3>02　實際歷史資料回測</h3>
+                            <p class="desc">CSV 匯入每日「調整後價格」；依實際價格變動比較 100% 一般 ETF、50/50 正2＋現金、50/50 正2＋一般 ETF。</p>
+                        </div><button class="btn" type="button" data-go="debt" data-focus="loanStrategy">50/50 方案 ·
+                            修改</button>
+                    </div>
+                    <div class="fields"><label class="field full"><span>歷史調整後價格 CSV（date,etf,leveraged）</span><input
+                                type="file" id="historyFile" accept=".csv,text/csv" class="file-input"></label><label
+                            class="field"><span>每次股票交易成本</span>
+                            <div class="entry"><input type="number" min="0" max="500" step="1"
+                                    data-key="backtestTradingBps"><span class="unit">bps</span></div>
+                        </label><label class="field"><span>現金年化報酬</span>
+                            <div class="entry"><input type="number" min="-20" max="100" step=".1"
+                                    data-key="backtestCashRate"><span class="unit">%</span></div>
+                        </label><label class="field"><span>再平衡頻率</span><select data-key="backtestRebalance">
+                                <option value="monthly">每月</option>
+                                <option value="quarterly">每季</option>
+                                <option value="yearly">每年</option>
+                                <option value="none">買入後不再平衡（新投入仍依原始比重）</option>
+                            </select></label>
+                        <div class="read-only">
+                            <div class="minor">共同投入：期初本金＋每月投入</div><strong id="btFunding">—</strong>
+                        </div>
+                    </div>
+                    <div class="inline-actions"><button class="btn primary" id="runBacktest"
+                            type="button">執行歷史回測</button><button class="btn" type="button" id="downloadCsvTemplate">下載
+                            CSV 欄位範本</button><button class="btn" type="button" id="exportBacktest">匯出回測明細 CSV</button>
+                    </div>
+                    <p class="fine" id="btStatus">尚未匯入資料，絕不使用虛構歷史行情。</p>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>策略</th>
+                                    <th>回測終值</th>
+                                    <th>累計投入</th>
+                                    <th>投資損益</th>
+                                    <th>時間加權年化</th>
+                                    <th>最大回撤</th>
+                                </tr>
+                            </thead>
+                            <tbody id="btResults">
+                                <tr>
+                                    <td colspan="6">請先匯入實際價格 CSV</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="hint">請使用含股息再投資及分割調整的同幣別價格，日期須對齊且由舊到新，至少 20
+                        個有效交易日。新增投入於每個新月份第一筆資料日買入，測試全程不外插未來資料。交易成本依每次買賣成交金額估算，沒有另外重複扣 ETF
+                        已反映在調整後價格內的費用；也不處理稅、滑價和資料商調整方式。若資料缺漏，結果可能不可靠。</div>
+                </div>
+                <div class="panel advanced-section" id="advancedLoan">
+                    <div class="flex-between">
+                        <div>
+                            <h3>03　逐月貸款與借款投資現金流</h3>
+                            <p class="desc">直接連動「借貸與正2」本金、初始利率、年限、投資方式與比較年數；另外可設定寬限期、變動利率、額外還本與提早結清。</p>
+                        </div><button class="btn" type="button" data-go="debt" data-focus="loanAmount">貸款本金 ·
+                            修改</button>
+                    </div>
+                    <div class="fields"><label class="field"><span>只繳息寬限月數</span>
+                            <div class="entry"><input type="number" min="0" max="480" step="1"
+                                    data-key="loanGraceMonths"><span class="unit">月</span></div>
+                        </label><label class="field"><span>自第幾月起改用新年利率（0＝無）</span>
+                            <div class="entry"><input type="number" min="0" max="480" step="1"
+                                    data-key="loanRateChangeMonth"><span class="unit">月</span></div>
+                        </label><label class="field"><span>變更後名目年利率</span>
+                            <div class="entry"><input type="number" min="0" max="100" step=".1"
+                                    data-key="loanResetRate"><span class="unit">%</span></div>
+                        </label><label class="field"><span>每月額外償還本金</span>
+                            <div class="entry"><input type="number" min="0" step="100" data-key="loanExtra"><span
+                                    class="unit">元</span></div>
+                        </label><label class="field"><span>從第幾月開始額外還本</span>
+                            <div class="entry"><input type="number" min="1" max="480" step="1"
+                                    data-key="loanExtraStart"><span class="unit">月</span></div>
+                        </label><label class="field"><span>第幾月提前全部清償（0＝不提前）</span>
+                            <div class="entry"><input type="number" min="0" max="480" step="1"
+                                    data-key="loanCloseMonth"><span class="unit">月</span></div>
+                        </label><label class="field"><span>提前清償違約金（結清剩餘本金 %）</span>
+                            <div class="entry"><input type="number" min="0" max="20" step=".1"
+                                    data-key="loanCloseFee"><span class="unit">%</span></div>
+                        </label>
+                        <div class="read-only">
+                            <div class="minor">比較期間（與退休年數同步）</div><strong id="loanLinkedYears">—</strong>
+                        </div>
+                    </div>
+                    <div class="grid-3 advanced-metrics">
+                        <div class="stat">
+                            <div class="label">全期利息</div>
+                            <div class="val" id="adTotalInterest">—</div>
+                        </div>
+                        <div class="stat">
+                            <div class="label">最高每月償債額</div>
+                            <div class="val" id="adMaxPay">—</div>
+                        </div>
+                        <div class="stat">
+                            <div class="label">借款 vs 不借款期末淨值差</div>
+                            <div class="val" id="adDiff">—</div>
+                        </div>
+                    </div>
+                    <p class="fine" id="adLiquidityNote">提前結清的單次款項會從投資資產支付；若資產不足，則無法進行有效比較。</p>
+                    <div class="inline-actions"><button class="btn" type="button" id="exportLoanSchedule">下載完整逐月攤還
+                            CSV</button><button class="btn" type="button" data-go="overview">返回綜合總表</button></div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>期數</th>
+                                    <th>適用年利率</th>
+                                    <th>利息</th>
+                                    <th>正常還款</th>
+                                    <th>額外還本／一次結清</th>
+                                    <th>本月總支出</th>
+                                    <th>剩餘本金</th>
+                                </tr>
+                            </thead>
+                            <tbody id="loanScheduleRows">
+                                <tr>
+                                    <td colspan="7">請至借貸頁設定貸款</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="hint warn">
+                        比較採「相同固定月度可投資預算」：不借款者將最高「正常還款＋定期額外還本」的月度預算投入；借款者先投資新增借款並按期還款，剩餘預算再投入。提前結清本金與違約金屬一次性支出，優先由借款方投資組合變現支付，不當作每月預算；組合不足以支付時，顯示無法比較。每月預算若高於實際可支配收入，兩種情境都不可執行。變動利率僅支援單次重設；未納入稅務、滑價、擔保條件及正2的真實逐日路徑。
+                    </div>
+                </div>
+                <div class="inline-actions" style="justify-content:flex-end"><button type="button" class="btn primary"
+                        data-go="overview">回綜合總表</button></div>
+            </section>
+        </main>
+        <div class="flow-bar" id="flowBar" aria-live="polite">
+            <div class="flow-meta"><strong id="flowTitle">正在填寫</strong><span id="flowSubtitle">所有金額都會即時同步到總表。</span>
+                <div class="guide-toast" id="flowMessage" role="status"></div>
+            </div>
+            <div class="flow-actions"><button type="button" class="btn" id="guideBack">回綜合總表</button><button
+                    type="button" class="btn primary" id="guideComplete">確認本頁，下一步</button><button type="button"
+                    class="btn" id="guideSkip" hidden>本頁不需要，略過</button></div>
+        </div>
+
+        <div class="toolbar"><button type="button" class="btn primary" id="saveAll">儲存全部</button><button type="button"
+                class="btn" id="exportData">匯出資料 JSON</button><button type="button" class="btn" id="importDataBtn">匯入資料
+                JSON</button><input type="file" accept=".json,application/json" id="importDataFile" hidden><button
+                type="button" class="btn" id="sampleData">載入範例</button><button type="button" class="btn ghost"
+                id="resetAll">重設全部</button><span class="status" id="saveStatus" role="status"
+                aria-live="polite">資料儲存在此瀏覽器（未加密），不會自行上傳。</span></div>
+        <div class="note">重要：此工具供個人教育與情境試算，未經金融機構認證，不能取代專業理財、稅務或貸款評估。所有報酬率、利率、提領率均為假設，實際結果可能有重大差異；輸入資料儲存在瀏覽器
+            localStorage，未加密，使用共用裝置時請留意隱私。金額顯示四捨五入，內部保留計算精度。</div>
+        <details class="audit-methods">
+            <summary>檢視計算方法、假設與參考來源</summary>
+            <div class="block-note">
+                <p><b>複利：</b>每月月底投入；以有效年化報酬換算為每月報酬，再做複利。固定報酬不代表真實市場路徑。</p>
+                <p><b>貸款：</b>逐月計算本金、利息、寬限期、額外還本與單次利率變動；起始費用以投資本金減項處理，提早結清費另列。不反推金融機構核貸的實質總費用年百分率，且不能代表銀行實際逐次調息及核貸條款。</p>
+                <p><b>十年生活費：</b>名目安全目標為每月必要支出乘以 120；通膨情境另外逐年加總，不包含投資收益。</p>
+                <p><b>退休：</b>4% 是參考初始提領率，不等於投資每年賺 4%，也不保證 30 年以上可持續。定額提領與隨通膨增加的提領分開試算，均假設平滑固定報酬。</p>
+                <p><b>正2：</b>槓桿型 ETF 目標是單日倍數。借貸頁的年化率為固定假設，專業分析頁可自行匯入真實每日調整後價格，依價格路徑計算回測。切勿用槓桿倍數直接乘長期報酬。</p>
+                <p><b>蒙地卡羅：</b>為自行假設報酬和波動的獨立每月對數常態隨機路徑，逐月扣支出與費用。模擬資金存續比例不等同於能保證退休的統計置信程度，也沒有歷史回測的實證性。</p>
+                <p><b>財富階梯：</b>依 Nick Maggiulli 的六階淨資產分級，台幣固定以 30 倍示意，並非匯率即時換算。</p>
+                <p><b>參考資料：</b><a href="https://www.bengenfs.com/the-4-percent-rule/" target="_blank"
+                        rel="noopener noreferrer">Bengen 的 4% 提領研究說明</a>；<a
+                        href="https://accessibility.twse.com.tw/zh/products/securities/etf/products/li.html"
+                        target="_blank" rel="noopener noreferrer">臺灣證交所槓桿型 ETF 說明</a>；<a
+                        href="https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-alerts/sec"
+                        target="_blank" rel="noopener noreferrer">美國 SEC 槓桿型 ETF 風險提醒</a>；<a
+                        href="https://www.dbs.com.sg/personal/articles/nav/financial-planning/wealth-ladder"
+                        target="_blank" rel="noopener noreferrer">財富階梯六階概念</a>。</p>
+            </div>
+        </details>
+        <footer class="footer">願你有喜歡的日常，也有安心的未來。</footer>
+    </div>
+    <script>
+        (() => {
+            'use strict';
+            const KEY = 'happiness-wealth-planner-v3';
+            const defaults = { mcMean: 5, mcVol: 15, mcFee: 0.5, mcTrials: 1000, mcYears: 30, mcSeed: 48, mcSource: "future", mcPensionIndexed: false, backtestTradingBps: 10, backtestCashRate: 1.5, backtestRebalance: "monthly", loanGraceMonths: 0, loanRateChangeMonth: 0, loanResetRate: 2.5, loanExtra: 0, loanExtraStart: 1, loanCloseMonth: 0, loanCloseFee: 0, income: 0, food: 0, clothing: 0, housing: 0, transport: 0, other: 0, irregularAnnual: 0, existingMonthlyPay: 0, reserveMonths: 6, cash: 0, investAssets: 0, propertyValue: 0, otherAssets: 0, existingMortgage: 0, existingLiabilities: 0, yearsToRetire: 20, inflation: 2, withdrawRate: 4, scenarioRate: 8, pension: 0, withdrawYears: 20, decumRate: 2, existingInvestRate: 5, loanKind: 'none', loanAmount: 0, loanRate: 2.5, loanYears: 7, loanFee: 0, loanOwn: 0, loanStrategy: 'normal', normalRate: 6, doubleRate: 10, cashRate: 1.5, includeLoanPayment: false, investments: [{ id: 1, name: '台股 ETF', monthly: 0, rate: 6 }, { id: 2, name: '債券／定存', monthly: 0, rate: 2 }] };
+            const numKeys = new Set(Object.keys(defaults).filter(k => typeof defaults[k] === 'number'));
+            let state = JSON.parse(JSON.stringify(defaults));
+            const $ = id => document.getElementById(id); const fmt = new Intl.NumberFormat('zh-TW', { maximumFractionDigits: 0 }); const money = n => !Number.isFinite(n) ? '—' : (n < -.5 ? '−' : '') + fmt.format(Math.abs(Math.round(n))) + ' 元'; const per = n => !Number.isFinite(n) ? '—' : ((n * 100).toFixed(1).replace(/\.0$/, '')) + '%'; const clamp = (v, a, b) => Math.min(b, Math.max(a, v)); const safe = n => Number.isFinite(n) ? n : 0; const set = (id, value) => { const e = $(id); if (e) e.textContent = value }; const bar = (id, p) => { const e = $(id); if (e) e.style.width = clamp(p * 100, 0, 100) + '%' };
+            function validateNumber(key, val) { let n = Number(val); if (!Number.isFinite(n)) n = 0; let lim = key === 'yearsToRetire' ? [0, 70] : key === 'withdrawYears' ? [1, 60] : key === 'loanYears' ? [1, 40] : key === 'reserveMonths' ? [1, 60] : key === 'inflation' ? [-5, 30] : key === 'scenarioRate' || key === 'existingInvestRate' || key === 'normalRate' || key === 'doubleRate' || key === 'decumRate' ? [-90, 100] : key === 'cashRate' ? [-20, 100] : key === 'withdrawRate' ? [.5, 20] : key === 'loanRate' ? [0, 100] : key === 'mcMean' ? [-90, 100] : key === 'mcVol' ? [0, 100] : key === 'mcFee' ? [0, 20] : key === 'mcTrials' ? [200, 5000] : key === 'mcYears' ? [1, 60] : key === 'mcSeed' ? [1, 2147483647] : key === 'backtestTradingBps' ? [0, 500] : key === 'backtestCashRate' ? [-20, 100] : key === 'loanGraceMonths' || key === 'loanRateChangeMonth' || key === 'loanExtraStart' || key === 'loanCloseMonth' ? [0, 480] : key === 'loanResetRate' ? [0, 100] : key === 'loanCloseFee' ? [0, 20] : [0, 1e12]; return clamp(n, ...lim) }
+            function sanitize(input) { if (!input || typeof input !== 'object' || Array.isArray(input)) return JSON.parse(JSON.stringify(defaults)); const output = JSON.parse(JSON.stringify(defaults)); for (const k of numKeys) if (k in input) output[k] = validateNumber(k, input[k]); if (['none', 'mortgage', 'personal'].includes(input.loanKind)) output.loanKind = input.loanKind; if (['normal', 'cash', 'market'].includes(input.loanStrategy)) output.loanStrategy = input.loanStrategy; if (typeof input.includeLoanPayment === 'boolean') output.includeLoanPayment = input.includeLoanPayment; if (typeof input.mcPensionIndexed === 'boolean') output.mcPensionIndexed = input.mcPensionIndexed; if (['future', 'current'].includes(input.mcSource)) output.mcSource = input.mcSource; if (['monthly', 'quarterly', 'yearly', 'none'].includes(input.backtestRebalance)) output.backtestRebalance = input.backtestRebalance; if (Array.isArray(input.investments)) { output.investments = input.investments.slice(0, 16).map((r, i) => ({ id: i + 1, name: String(r.name || '投資項目').slice(0, 36), monthly: clamp(safe(Number(r.monthly)), 0, 1e12), rate: clamp(safe(Number(r.rate)), -90, 100) })) } return output }
+            function load() { try { const s = localStorage.getItem(KEY); if (s) state = sanitize(JSON.parse(s)) } catch (e) { } }
+            function persist() { try { localStorage.setItem(KEY, JSON.stringify(state)); set('saveStatus', '已在此裝置儲存（所有分頁共用）。') } catch (e) { set('saveStatus', '瀏覽器不允許儲存，可使用匯出 JSON。') } }
+            let saveTimeout; function queueSave() { clearTimeout(saveTimeout); saveTimeout = setTimeout(persist, 300); set('saveStatus', '已更新計算，準備儲存。') }
+            function readInputs() { document.querySelectorAll('[data-key]').forEach(el => { const k = el.dataset.key; if (el.type === 'checkbox') el.checked = Boolean(state[k]); else el.value = state[k] ?? '' }) }
+            function syncKey(k, source) { document.querySelectorAll('[data-key="' + k + '"]').forEach(el => { if (el !== source) { if (el.type === 'checkbox') el.checked = Boolean(state[k]); else el.value = state[k] } }) }
+            function monthlyRate(yearlyPercent) { return Math.pow(1 + yearlyPercent / 100, 1 / 12) - 1 }
+            function annuity(initial, monthly, years, rate) { const n = Math.round(years * 12), r = monthlyRate(rate); if (n <= 0) return initial; const factor = Math.pow(1 + r, n); return safe(initial * factor + (Math.abs(r) < 1e-12 ? monthly * n : monthly * (factor - 1) / r)) }
+            function payout(balance, years, rate) { const n = Math.max(1, Math.round(years * 12)), r = monthlyRate(rate); return Math.abs(r) < 1e-12 ? balance / n : balance * r / (1 - Math.pow(1 + r, -n)) }
+            // First month's payment, then increases monthly with inflation; deterministic, not a safe-withdrawal guarantee.
+            function payoutIndexed(balance, years, annualReturn, annualInflation) {
+                const n = Math.max(1, Math.round(years * 12)), r = monthlyRate(annualReturn), i = monthlyRate(annualInflation);
+                if (balance <= 0) return 0;
+                if (Math.abs(r - i) < 1e-10) return balance * (1 + r) / n;
+                return balance * (r - i) / (1 - Math.pow((1 + i) / (1 + r), n));
+            }
+            function calcLoan(amount, apr, years, horizon) { if (amount <= 0) return { payment: 0, totalInterest: 0, paidInterest: 0, balance: 0, months: 0, paidMonths: 0 }; const months = Math.round(years * 12), r = apr / 1200, payment = r === 0 ? amount / months : amount * r / (1 - Math.pow(1 + r, -months)), paidMonths = Math.min(months, Math.round(horizon * 12)), balance = r === 0 ? amount * (1 - paidMonths / months) : amount * Math.pow(1 + r, paidMonths) - payment * (Math.pow(1 + r, paidMonths) - 1) / r; const paidInterest = paidMonths * payment - (amount - Math.max(0, balance)); return { payment, totalInterest: payment * months - amount, paidInterest, balance: Math.max(0, balance), months, paidMonths } }
+            function calcPortfolioAt(year) { const init = annuity(state.investAssets, 0, year, state.existingInvestRate); let future = init, monthly = 0, principal = state.investAssets; for (const r of state.investments) { const m = safe(+r.monthly); monthly += m; future += annuity(0, m, year, safe(+r.rate)); principal += m * 12 * year } return { future, principal, profit: future - principal, monthly } }
+            function scenarioRatePortfolio() { const a = monthlyRate(state.normalRate), b = monthlyRate(state.doubleRate), c = monthlyRate(state.cashRate); return state.loanStrategy === 'cash' ? .5 * b + .5 * c : state.loanStrategy === 'market' ? .5 * b + .5 * a : a }
+            function futureWithMonthly(initial, monthly, months, rate) { if (months <= 0) return initial; const factor = Math.pow(1 + rate, months); return initial * factor + (Math.abs(rate) < 1e-12 ? monthly * months : monthly * (factor - 1) / rate) }
+            function borrowScenario() {
+                const borrow = state.loanKind === 'none' ? 0 : state.loanAmount;
+                const detail = advancedLoanModel();
+                const loan = { payment: detail.peakPayment, totalInterest: detail.totalInterest, paidInterest: detail.paidInterest, balance: detail.balanceAtHorizon, months: detail.termMonths, paidMonths: detail.paidMonths };
+                const weights = state.loanStrategy === 'normal' ? { normal: 1, lever: 0, cash: 0 } : state.loanStrategy === 'cash' ? { normal: 0, lever: .5, cash: .5 } : { normal: .5, lever: .5, cash: 0 };
+                const shockFactor = Math.max(0, 1 - weights.normal * .3 - weights.lever * .6);
+                const shockedLever = detail.leveragedAssets * shockFactor - detail.balanceAtHorizon;
+                const shockedBase = detail.baseline * shockFactor;
+                return { borrow, loan, asset: detail.leveragedAssets, post: detail.reinvested, leveraged: detail.netAtHorizon, baseline: detail.baseline, diff: detail.difference, profit: detail.initialProfit, shockedLever, shockLoss: detail.netAtHorizon - shockedLever, shockDiff: shockedLever - shockedBase, fee: borrow ? state.loanFee : 0, detail };
+            }
+            function compute() {
+                const living = state.food + state.clothing + state.housing + state.transport + state.other; const essential = living + state.irregularAnnual / 12;
+                const safety = essential * 120; const inflation = state.inflation / 100;
+                const safetyInflated = essential * 12 * (Math.abs(inflation) < 1e-12 ? 10 : (Math.pow(1 + inflation, 10) - 1) / inflation);
+                const assets = state.cash + state.investAssets + state.propertyValue + state.otherAssets; const liabilities = state.existingMortgage + state.existingLiabilities; const net = assets - liabilities; const portfolio = calcPortfolioAt(state.yearsToRetire); const loan = borrowScenario(); const loanPaymentIncluded = state.includeLoanPayment ? loan.loan.payment : 0;
+                // Existing required loan payments are a genuine emergency cash obligation, not discretionary spending.
+                const emergency = (essential + state.existingMonthlyPay + loanPaymentIncluded) * state.reserveMonths;
+                const surplus = state.income - essential - state.existingMonthlyPay - portfolio.monthly - loanPaymentIncluded;
+                const retireExpense = essential * Math.pow(1 + state.inflation / 100, state.yearsToRetire); const retireShortfall = Math.max(0, (retireExpense - state.pension) * 12); const target = retireShortfall / (state.withdrawRate / 100); const r48 = annuity(state.investAssets, portfolio.monthly, state.yearsToRetire, state.scenarioRate);
+                return { living, essential, safety, safetyInflated, emergency, assets, liabilities, net, portfolio, loan, loanPaymentIncluded, surplus, retireExpense, target, retireShortfall, r48 }
+            }
+            const ladderLimits = [-Infinity, 300000, 3000000, 30000000, 300000000, 3000000000, Infinity];
+            function stageFor(net) { for (let i = 0; i < 6; i++)if (net < ladderLimits[i + 1]) return i; return 5 }
+            function renderInvestmentRows() { const el = $('investRows'); el.replaceChildren(); state.investments.forEach((r, i) => { const wrap = document.createElement('div'); wrap.className = 'compound-row'; wrap.dataset.index = i; wrap.innerHTML = '<label class="field name-cell"><span>投資名稱</span><input class="row-input" data-field="name" type="text" maxlength="36" aria-label="投資名稱"></label><label class="field"><span>每月投入（元）</span><input class="row-input" data-field="monthly" type="number" min="0" step="100"></label><label class="field"><span>年化報酬（%）</span><input class="row-input" data-field="rate" type="number" min="-90" max="100" step=".5"></label><div class="read-only"><div class="minor">年投入</div><strong class="row-annual">0 元</strong></div><button type="button" class="remove" data-remove="' + i + '">移除</button>'; wrap.querySelector('[data-field="name"]').value = r.name; wrap.querySelector('[data-field="monthly"]').value = r.monthly; wrap.querySelector('[data-field="rate"]').value = r.rate; el.append(wrap) }) }
+            function drawChart() { const years = state.yearsToRetire; const n = Math.min(20, Math.max(2, Math.ceil(years) || 2)); const points = Array.from({ length: n }, (_, i) => calcPortfolioAt(years * i / (n - 1)).future); const top = Math.max(1, ...points); $('investmentChart').innerHTML = ''; for (const value of points) { const b = document.createElement('div'); b.className = 'bar'; b.style.height = (Math.max(2, value / top * 100)) + '%'; b.title = money(value); $('investmentChart').append(b) } set('chartEndYear', years + ' 年後') }
+
+            let masterExportRows = [];
+            function renderMaster(c, p, d, stage) {
+                const hasSpending = c.essential > 0, hasIncome = state.income > 0, cash = state.cash, liquid = cash + state.investAssets;
+                const nowFree = payoutIndexed(p.future, state.withdrawYears, state.decumRate, state.inflation) + state.pension;
+                const next = ladderLimits[stage + 1];
+                const shortage = (goal, current) => Math.max(0, goal - current);
+                const cells = [];
+                const groups = [
+                    {
+                        title: '01　每月現金流', rows: [
+                            ['每月稅後收入', money(state.income), '作為收支基準', hasIncome ? '已填寫' : '待輸入收入', 'living', 'neutral'],
+                            ['生活與必要支出', money(c.essential), '納入月結餘計算', hasSpending ? '已連動' : '待輸入生活費', 'living', 'neutral'],
+                            ['既有貸款月付＋擬議新月付', money(state.existingMonthlyPay + c.loanPaymentIncluded), '新增貸款需勾選才納入', state.includeLoanPayment && d.borrow > 0 ? '包含擬議月付' : '不含擬議月付', 'debt', 'neutral'],
+                            ['分項定期投資／月', money(p.monthly), money(p.monthly * 12) + '／年', '自動扣除每月現金流', 'invest', 'neutral'],
+                            ['扣款後每月可用結餘', money(c.surplus), '至少 0 元', !hasIncome ? '請先輸入收入' : c.surplus < 0 ? '每月不足 ' + money(-c.surplus) : '剩餘 ' + money(c.surplus), 'living', hasIncome ? (c.surplus < 0 ? 'bad' : 'good') : 'neutral']
+                        ]
+                    },
+                    {
+                        title: '02　現有資產與財富階梯', rows: [
+                            ['實際總資產', money(c.assets), '現金、投資、房屋、其他', '不含借款模擬', 'wealth', 'neutral'],
+                            ['實際總負債', money(c.liabilities), '現有房貸＋其他負債', '不含擬議借款', 'wealth', 'neutral'],
+                            ['實際淨資產（第 ' + (stage + 1) + ' 階）', money(c.net), stage === 5 ? '已達第 6 階' : '下階目標 ' + money(next), stage === 5 ? '已達最高示意階' : '距下階 ' + money(shortage(next, c.net)), 'wealth', stage === 5 ? 'good' : 'neutral']
+                        ]
+                    },
+                    {
+                        title: '03　生活安全與資金準備', rows: [
+                            ['緊急預備金（含必要月付）', money(cash), money(c.emergency), !hasSpending ? '待輸入生活費' : cash >= c.emergency ? '已達目標' : '尚差 ' + money(shortage(c.emergency, cash)), 'living', hasSpending ? (cash >= c.emergency ? 'good' : 'bad') : 'neutral'],
+                            ['十年生活費資產對照', money(liquid) + '（現金＋波動性投資）', money(c.safety), !hasSpending ? '待輸入生活費' : liquid >= c.safety ? '已達名目金額' : '尚差 ' + money(shortage(c.safety, liquid)), 'living', hasSpending ? (liquid >= c.safety ? 'good' : 'bad') : 'neutral']
+                        ]
+                    },
+                    {
+                        title: '04　投資複利與財務自由', rows: [
+                            ['退休時預估投資資產', money(p.future), money(c.target) + '（退休參考目標）', !hasSpending ? '待輸入生活費' : c.surplus < 0 ? '計畫月現金流不足，預測不可直接執行' : p.future >= c.target ? '假設情境達標' : '預估缺口 ' + money(shortage(c.target, p.future)), 'invest', hasSpending ? (p.future >= c.target ? 'good' : 'bad') : 'neutral'],
+                            ['預估投資複利損益', money(p.profit), money(p.principal) + '（投入本金）', p.profit < 0 ? '預估虧損' : '固定報酬假設，非保證收益', 'invest', p.profit < 0 ? 'bad' : 'neutral'],
+                            ['4/8 情境比較', money(c.r48), money(c.target) + '（退休目標）', !hasSpending ? '待輸入生活費' : c.surplus < 0 ? '月現金流不足，情境尚不可行' : c.r48 >= c.target ? '假設情境達標' : '情境缺口 ' + money(shortage(c.target, c.r48)), 'rule48', hasSpending ? (c.r48 >= c.target ? 'good' : 'bad') : 'neutral'],
+                            ['退休首月通膨調整提領＋固定收入', money(nowFree), money(c.retireExpense) + '（退休首月支出）', !hasSpending ? '待輸入生活費' : nowFree >= c.retireExpense ? '僅首月情境可覆蓋' : '首月缺口 ' + money(shortage(c.retireExpense, nowFree)), 'rule48', hasSpending ? (nowFree >= c.retireExpense ? 'good' : 'bad') : 'neutral']
+                        ]
+                    },
+                    {
+                        title: '05　借貸、槓桿與市場風險（模型情境）', rows: [
+                            ['新增房貸／信貸月付', d.borrow > 0 ? money(d.loan.payment) : '未設定', d.borrow > 0 ? '全期利息 ' + money(d.loan.totalInterest) : '未借款', d.borrow > 0 ? (state.includeLoanPayment ? '已計入月結餘' : '尚未計入月結餘') : '不影響實際負債', 'debt', 'neutral'],
+                            ['借款相對不借款期末差額', d.borrow > 0 ? (d.detail.feasible ? money(d.diff) : '資金不足，無法比較') : '未設定', '相同自有資金與每月資金負擔', d.borrow > 0 ? (d.detail.feasible ? (d.diff >= 0 ? '情境增加' : '情境減少') : '一次性結清資金不足') : '無新增借款', 'debt', d.borrow > 0 ? (d.detail.feasible ? (d.diff >= 0 ? 'good' : 'bad') : 'bad') : 'neutral'],
+                            ['市場下跌壓力後相對差額', d.borrow > 0 ? (d.detail.feasible ? money(d.shockDiff) : '資金不足，無法比較') : '未設定', '情境假設：一般 -30%；正2 -60%', d.borrow > 0 ? (d.detail.feasible ? (d.shockDiff >= 0 ? '仍較基準高' : '低於不借款基準') : '一次性結清資金不足') : '無新增借款', 'debt', d.borrow > 0 ? (d.detail.feasible ? (d.shockDiff >= 0 ? 'good' : 'bad') : 'bad') : 'neutral']
+                        ]
+                    },
+                    {
+                        title: '06　專業風險分析（需執行或匯入資料）', rows: [
+                            ['退休蒙地卡羅資金存續比例', monteResult && !monteResult.error ? per(monteResult.successRate) : '尚未執行', '模擬 ' + state.mcYears + ' 年／' + fmt.format(state.mcTrials) + ' 條路徑', monteResult && !monteResult.error ? '參數假設下的模擬占比（非保證）' : '前往專業分析執行', 'analysis', monteResult && !monteResult.error ? 'neutral' : 'bad'],
+                            ['投資實際歷史回測', backtestResult && !backtestResult.error ? '已回測 ' + backtestResult.tradingDays + ' 筆' : '尚未匯入有效價格', backtestResult && !backtestResult.error ? backtestResult.period : '需要 date,etf,leveraged CSV', backtestResult && !backtestResult.error ? '三種策略均使用同一份真實價格' : '歷史結果與預測分開', 'analysis', 'neutral'],
+                            ['逐月借貸現金流比較', d.borrow > 0 ? (d.detail.feasible ? money(d.diff) : '無法比較') : '未設定借款', d.borrow > 0 ? '最高月付 ' + money(d.loan.payment) : '前往借貸與正2輸入', d.borrow > 0 ? '逐月攤還、一次變動利率及提早還款' : '不會自動把擬議借款算入實際淨資產', 'analysis', 'neutral']
+                        ]
+                    }
+                ];
+                const body = $('masterTableBody'); body.replaceChildren(); masterExportRows = [['類別', '規劃項目', '目前／投入', '目標／預測', '差額／評估', '資料來源']];
+                const sourceLabel = { living: '生活安全', wealth: '財富階梯', rule48: '4/8 試算', invest: '投資複利', debt: '借貸與正2', analysis: '專業分析' };
+                for (const group of groups) {
+                    const header = document.createElement('tr'); header.className = 'master-section';
+                    const label = document.createElement('td'); label.colSpan = 5; label.textContent = group.title; header.append(label); body.append(header);
+                    for (const item of group.rows) {
+                        const [label, current, goal, assessment, source, tone] = item;
+                        const tr = document.createElement('tr'); tr.className = 'master-row';
+                        for (const [i, val] of [label, current, goal, assessment].entries()) {
+                            const td = document.createElement('td'); td.dataset.label = ['規劃項目', '目前／投入', '目標／預測', '差額／評估'][i]; td.textContent = val;
+                            if (i === 0) td.className = 'master-label'; if (i === 3) td.className = 'master-status ' + tone; tr.append(td)
+                        }
+                        const last = document.createElement('td'); last.dataset.label = '資料來源'; const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'master-source'; btn.dataset.go = source; btn.dataset.focus = source === 'living' ? (label.includes('收入') || label.includes('結餘') ? 'income' : label.includes('貸款') ? 'existingMonthlyPay' : 'food') : source === 'wealth' ? (label.includes('負債') ? 'existingMortgage' : label.includes('金融') ? 'investAssets' : 'cash') : source === 'rule48' ? (label.includes('提領') ? 'withdrawYears' : 'yearsToRetire') : source === 'invest' ? 'investRows' : source === 'analysis' ? (label.includes('蒙地卡羅') ? 'mcMean' : label.includes('歷史') ? 'historyFile' : 'loanGraceMonths') : 'loanKind'; btn.textContent = sourceLabel[source] + ' · 修改'; last.append(btn); tr.append(last); body.append(tr);
+                        masterExportRows.push([group.title, label, current, goal, assessment, sourceLabel[source]]);
+                    }
+                }
+                set('masterCashflow', money(c.surplus)); set('masterNetWorth', money(c.net)); set('masterRetireGap', !hasSpending ? '待輸入支出' : money(shortage(c.target, p.future)));
+                $('masterCashflow').classList.toggle('warn-text', c.surplus < 0);
+                const time = Array.from(new Set([0, 5, 10, 15, state.yearsToRetire].filter(y => y <= state.yearsToRetire))).sort((a, b) => a - b);
+                const roadmap = $('masterTimeline'); roadmap.replaceChildren();
+                const timelineExport = [['年數', '累積投入本金', '預估投資資產', '投資損益', '當年退休目標', '退休目標差額']];
+                for (const year of time) {
+                    const v = calcPortfolioAt(year);
+                    const futureExpense = c.essential * Math.pow(1 + state.inflation / 100, year);
+                    const goal = Math.max(0, futureExpense - state.pension) * 12 / (state.withdrawRate / 100);
+                    const gap = goal - v.future;
+                    const tr = document.createElement('tr');
+                    const values = [year === 0 ? '現在' : year === state.yearsToRetire ? year + ' 年（退休）' : year + ' 年後', money(v.principal), money(v.future), money(v.profit), money(goal), (gap > 0 ? '不足 ' : '超過 ') + money(Math.abs(gap))];
+                    values.forEach((value, i) => { const td = document.createElement('td'); td.textContent = value; if (i === 5 && gap > 0) td.className = 'warn-text'; tr.append(td) }); roadmap.append(tr); timelineExport.push([year, v.principal.toFixed(2), v.future.toFixed(2), v.profit.toFixed(2), goal.toFixed(2), gap.toFixed(2)]);
+                }
+                masterExportRows.push([], ['年度路線圖'], ...timelineExport);
+                let priority = '';
+                if (!hasIncome || !hasSpending) priority = '優先事項：先至「生活安全」輸入每月稅後收入與食衣住行支出，完整總表才有可判讀的結果。';
+                else if (c.surplus < 0) priority = '優先事項：目前每月收支不足 ' + money(-c.surplus) + '。建議先降低支出或調整投入與借款額度。';
+                else if (cash < c.emergency) priority = '優先事項：緊急預備金尚差 ' + money(c.emergency - cash) + '，在增加槓桿投資前應先評估現金安全水位。';
+                else if (p.future < c.target) priority = '優先事項：退休參考目標預估尚差 ' + money(c.target - p.future) + '，可以調整儲蓄率、退休年數或審慎檢視報酬假設。';
+                else priority = '目前固定報酬情境顯示達到參考門檻；尚未評估投資波動順序、退休支出變化與稅費，不代表退休一定安全。';
+                const fix = $('priorityAction'); if (!hasIncome || !hasSpending) { fix.dataset.go = 'living'; fix.dataset.focus = !hasIncome ? 'income' : 'food'; fix.textContent = '去填寫收入與生活費' } else if (c.surplus < 0) { fix.dataset.go = 'living'; fix.dataset.focus = 'income'; fix.textContent = '調整每月收入與支出' } else if (cash < c.emergency) { fix.dataset.go = 'wealth'; fix.dataset.focus = 'cash'; fix.textContent = '檢查現金與預備金' } else if (p.future < c.target) { fix.dataset.go = 'invest'; fix.dataset.focus = 'investRows'; fix.textContent = '調整每月投資計畫' } else { fix.dataset.go = 'rule48'; fix.dataset.focus = 'withdrawRate'; fix.textContent = '檢視退休假設' }
+                set('masterPriority', priority); $('masterPriority').classList.toggle('warn', priority.includes('不足') || priority.includes('尚差'));
+                const checks = [
+                    { name: '資料完整性', value: hasIncome && hasSpending ? '可進行初步分析' : '收入或生活費尚未填寫', good: hasIncome && hasSpending, to: 'living', focus: !hasIncome ? 'income' : 'food' },
+                    { name: '月度現金流', value: !hasIncome ? '待輸入收入' : c.surplus >= 0 ? '月結餘 ' + money(c.surplus) : '不足 ' + money(-c.surplus) + '，投資預測尚不可執行', good: hasIncome && c.surplus >= 0, to: 'living', focus: 'income' },
+                    { name: '緊急預備金', value: !hasSpending ? '待輸入生活費' : cash >= c.emergency ? '已達含必要月付的目標' : '距目標尚差 ' + money(c.emergency - cash), good: hasSpending && cash >= c.emergency, to: 'wealth', focus: 'cash' },
+                    { name: '新增借款處理', value: d.borrow === 0 ? '未設定借款情境' : !state.includeLoanPayment ? '擬議月付尚未納入每月現金流' : '已納入月現金流壓力測試', good: d.borrow === 0 || state.includeLoanPayment, to: 'debt', focus: 'includeLoanPayment' }
+                ];
+                const q = $('planChecks'); q.replaceChildren(); for (const x of checks) { const item = document.createElement('div'); item.className = 'quality-item' + (x.good ? ' pass' : ' needs'); const title = document.createElement('strong'); title.textContent = x.name; const msg = document.createElement('span'); msg.textContent = x.value; const b = document.createElement('button'); b.type = 'button'; b.className = 'quality-link'; b.dataset.go = x.to; b.dataset.focus = x.focus; b.textContent = '檢視／修改'; item.append(title, msg, b); q.append(item) }
+            }
+            function exportMasterCsv() { const csv = '\ufeff' + masterExportRows.map(r => r.map(v => '"' + String(v ?? '').replace(/"/g, '""') + '"').join(',')).join('\r\n'); exportBlob('financial_master_plan.csv', csv, 'text/csv;charset=utf-8') }
+
+            function render() {
+                const c = compute(), p = c.portfolio, d = c.loan, stage = stageFor(c.net), progress = c.essential > 0 ? (c.target > 0 ? p.future / c.target : 1) : 0;
+                // Overview
+                set('ovNet', money(c.net)); $('ovNet').classList.toggle('negative', c.net < 0); set('ovSpend', money(c.essential)); set('ovSafety', money(c.safety)); set('ovFreedom', money(c.target)); set('ovIncome', money(state.income)); set('ovExpense', money(c.essential)); set('ovExistingPay', money(state.existingMonthlyPay)); set('ovContribution', money(p.monthly)); set('ovLoanPay', money(c.loanPaymentIncluded)); set('ovSurplus', money(c.surplus)); $('ovSurplus').classList.toggle('warn-text', c.surplus < 0); set('ovHealth', c.surplus < 0 ? '每月現金流不足，投資預測目前不具可執行性；請調降支出、投資金額或借款負擔。' : state.income === 0 ? '請先至生活安全填入每月收入與支出。' : '目前每月現金流非負；仍需評估預備金與意外支出。'); set('ovStage', '第 ' + (stage + 1) + ' 階'); set('ovTarget', money(c.target)); set('ovFuture', money(p.future)); set('ovGap', money(Math.max(0, c.target - p.future))); bar('ovProgress', progress); set('ovPct', c.essential > 0 ? per(progress) : '待填生活費'); set('routeLiving', '10 年目標 ' + money(c.safety)); set('routeWealth', '實際淨資產 ' + money(c.net)); set('route48', '退休資產目標 ' + money(c.target)); set('routeInvest', '預估期末資產 ' + money(p.future)); set('routeDebt', '新貸款月付 ' + money(d.loan.payment));
+                renderMaster(c, p, d, stage);
+                // Living
+                set('liSafety', money(c.safety)); set('liSafetyInflated', money(c.safetyInflated)); set('liSpend', money(c.living)); set('liIrregular', money(state.irregularAnnual / 12)); set('liEssential', money(c.essential)); set('liEmergency', money(c.emergency)); set('liCash', money(state.cash)); set('liGap', money(Math.max(0, c.safety - state.cash - state.investAssets))); set('liEmergencyPct', per(c.emergency ? state.cash / c.emergency : 1)); bar('liEmergencyProgress', c.emergency ? state.cash / c.emergency : 1); set('liMonthlyInvest', money(p.monthly)); set('liRisk', c.surplus < 0 ? '目前每月可運用餘額為 ' + money(c.surplus) + '，建議先調整投資或貸款規劃。' : '每月現金流扣除分項投資後剩餘 ' + money(c.surplus) + '。緊急預備金目標已納入另填的必要貸款月付，應以流動現金為主。');
+                // Wealth
+                set('weNet', money(c.net)); set('weStageText', '第 ' + (stage + 1) + ' 階｜' + ['建立基礎', '建立儲蓄', '資產成長', '資產擴張', '大型財富', '超高資產'][stage]); set('weAsset', money(c.assets)); set('weLiability', money(c.liabilities)); set('weCurrent', '第 ' + (stage + 1) + ' 階'); const next = ladderLimits[stage + 1]; set('weNext', stage === 5 ? '已達最高示意階' : money(next)); set('weToNext', stage === 5 ? '—' : money(Math.max(0, next - c.net))); let lower = stage === 0 ? 0 : ladderLimits[stage]; bar('weProgress', stage === 5 ? 1 : (c.net - lower) / (next - lower)); $('wealthSteps').innerHTML = ''; for (let i = 0; i < 6; i++) { const div = document.createElement('div'); div.className = 'step' + (i < stage ? ' passed' : i === stage ? ' current' : ''); div.innerHTML = '<strong>第 ' + (i + 1) + ' 階</strong><small>' + ['< 30 萬', '30–300 萬', '300–3000 萬', '3000 萬–3 億', '3–30 億', '30 億以上'][i] + '</small>'; $('wealthSteps').append(div) }
+                // 4/8
+                set('rExisting', money(state.investAssets)); set('rMonthly', money(p.monthly)); set('rSpend', money(c.essential)); set('rTarget', c.essential > 0 ? money(c.target) : '待輸入生活費'); set('rScenario', money(c.r48)); set('rPortfolio', money(p.future)); set('rGap', money(Math.max(0, c.target - p.future))); set('rFutureSpend', money(c.retireExpense)); const pay = payout(p.future, state.withdrawYears, state.decumRate), indexedPay = payoutIndexed(p.future, state.withdrawYears, state.decumRate, state.inflation); set('rMonthlyPayout', money(pay)); set('rMonthlyIndexed', money(indexedPay)); set('rPayoutPlus', money(indexedPay + state.pension)); set('r72', state.scenarioRate > 0 ? (72 / state.scenarioRate).toFixed(1) + ' 年' : '無法用正報酬翻倍估計'); bar('rProgress', progress); set('rPct', c.essential > 0 ? '假設情境完成率 ' + per(progress) : '請先填寫生活費');
+                // investment
+                set('iStarting', money(state.investAssets)); set('iSurplus', money(c.surplus)); set('iFuture', money(p.future)); set('iYears', '距離退休 ' + state.yearsToRetire + ' 年'); set('iMonthly', money(p.monthly)); set('iPrincipal', money(p.principal)); set('iProfit', money(p.profit)); $('iProfit').classList.toggle('warn-text', p.profit < 0); set('iGoalGap', money(Math.max(0, c.target - p.future))); document.querySelectorAll('#investRows .compound-row').forEach(row => { const i = Number(row.dataset.index); setAnnual(row, state.investments[i].monthly) }); drawChart(); const table = $('investmentYearRows'); table.innerHTML = ''; for (let year = 0; year <= state.yearsToRetire; year++) { const b = calcPortfolioAt(year); const tr = document.createElement('tr');[year + ' 年', money(b.principal), money(b.future), money(b.profit)].forEach(v => { const td = document.createElement('td'); td.textContent = v; tr.append(td) }); table.append(tr) }
+                // borrowing
+                set('dHorizon', state.yearsToRetire + ' 年'); set('dPayment', money(d.loan.payment)); set('dInterest', money(d.loan.totalInterest)); set('dBalance', money(d.loan.balance)); set('dLever', money(d.leveraged)); set('dBaseline', money(d.baseline)); set('dDifference', d.detail.feasible ? money(d.diff) : '無法比較'); set('dProfit', money(d.profit)); set('dGross', money(d.asset)); set('dPaidInterest', money(d.loan.paidInterest)); set('dExposure', state.loanStrategy === 'market' ? '150%' : '100%'); set('dPayRatio', state.income > 0 ? per(d.loan.payment / state.income) : '收入未填'); set('dTotalPayRatio', state.income > 0 ? per((state.existingMonthlyPay + d.loan.payment) / state.income) : '收入未填'); set('dShock', money(d.shockedLever)); set('dShockLoss', money(d.shockLoss)); set('dShockDiff', d.detail.feasible ? money(d.shockDiff) : '無法比較');['dDifference', 'dProfit', 'dShockDiff'].forEach(id => $(id).classList.toggle('warn-text', id === 'dProfit' ? d.profit < 0 : id === 'dDifference' ? d.diff < 0 : d.shockDiff < 0)); set('dWarning', d.borrow > 0 ? '借款投資的期末資產需扣除尚未還清的貸款。' + (d.detail.feasible ? '借貸方案與不借貸方案使用相同自有資金與每月現金流，差額 ' + money(d.diff) + '。' : '提前結清所需資金不足，無法比較兩方案期末結果。') + '若市場跌落，仍須按期還款；現有加擬議借款月付占收入 ' + (state.income > 0 ? per((state.existingMonthlyPay + d.loan.payment) / state.income) : '待輸入收入') + '。本工具變動利率為單次假設，未計實質總費用年百分率、稅費、ETF 管理費與追繳。' : '目前為不借款方案；若選房貸或信貸並設定本金，系統將重算本息月付、利息與賺賠。'); renderGuide(c, p, d, stage); renderAdvanced(c, p, d);
+            }
+            function setAnnual(row, monthly) { const e = row.querySelector('.row-annual'); if (e) e.textContent = money(monthly * 12) }
+            function showTab(name) { document.querySelectorAll('[data-tab]').forEach(b => { const on = b.dataset.tab === name; b.classList.toggle('active', on); b.setAttribute('aria-selected', String(on)) }); document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name)); document.body.dataset.currentPage = name; guide.visited.includes(name) || guide.visited.push(name); set('flowMessage', ''); renderGuide(compute(), calcPortfolioAt(state.yearsToRetire), borrowScenario(), stageFor(compute().net)); window.scrollTo({ top: 0, behavior: 'instant' }) }
+            function exportBlob(name, content, type) { const b = new Blob([content], { type }), url = URL.createObjectURL(b), a = document.createElement('a'); a.href = url; a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 500) }
+            function downloadCsv() { const rows = [['年數', '累計本金', '預估資產', '投資損益']]; for (let y = 0; y <= state.yearsToRetire; y++) { let x = calcPortfolioAt(y); rows.push([y, x.principal.toFixed(2), x.future.toFixed(2), x.profit.toFixed(2)]) } exportBlob('investment_forecast.csv', '\ufeff' + rows.map(r => r.join(',')).join('\r\n'), 'text/csv;charset=utf-8') }
+
+            // 逐步導引狀態獨立儲存，保留既有 V4 財務金額，支援從舊版直接升級。
+            const GUIDE_KEY = 'happiness-wealth-planner-guide-v5';
+            const GUIDE_STEPS = [
+                { id: 'living', title: '生活安全', note: '收入、食衣住行、每月餘額', focus: 'income' },
+                { id: 'wealth', title: '財富階梯', note: '現金、資產、房貸與淨資產', focus: 'cash' },
+                { id: 'rule48', title: '4/8 與退休', note: '年數、通膨、提領率與缺口', focus: 'yearsToRetire' },
+                { id: 'invest', title: '投資複利', note: '每月分項投入、報酬與預測', focus: 'investRows' },
+                { id: 'debt', title: '借貸與正2', note: '可略過：還款、槓桿、賺賠比較', focus: 'loanKind' }
+            ];
+            let guide = { completed: {}, touched: [], visited: [] };
+            let masterReturnIndex = null;
+            function returnToMaster() {
+                const savedIndex = masterReturnIndex; masterReturnIndex = null; showTab('overview');
+                const target = savedIndex !== null ? document.querySelectorAll('#masterTableBody .master-row')[savedIndex] : $('financialMasterTable');
+                const note = $('masterReturnNote'); note.hidden = false;
+                note.textContent = savedIndex === null ? '已回到綜合財務規劃總表，所有資料即時同步。' : '已返回剛才修改的總表項目，這一列已依最新資料重算。';
+                if (target) { target.classList.add('return-highlight'); requestAnimationFrame(() => { target.scrollIntoView({ behavior: 'smooth', block: savedIndex === null ? 'start' : 'center' }) }); setTimeout(() => target.classList.remove('return-highlight'), 2200) }
+            }
+
+            function getGuide() {
+                try { const v = localStorage.getItem(GUIDE_KEY); if (v) { const x = JSON.parse(v); if (x && typeof x === 'object') guide = { completed: (x.completed && typeof x.completed === 'object') ? x.completed : {}, touched: Array.isArray(x.touched) ? x.touched : [], visited: Array.isArray(x.visited) ? x.visited : [] }; return } } catch (e) { }
+                // 舊版資料有實質內容時，自動辨認；不會把預設假設值當成已填資料。
+                if (state.income > 0 || ['food', 'clothing', 'housing', 'transport', 'other'].some(k => state[k] > 0)) guide.completed.living = 'done';
+                if (['cash', 'investAssets', 'propertyValue', 'otherAssets', 'existingMortgage', 'existingLiabilities'].some(k => state[k] > 0)) guide.completed.wealth = 'done';
+                if (['yearsToRetire', 'inflation', 'withdrawRate', 'scenarioRate', 'pension', 'withdrawYears', 'decumRate'].some(k => state[k] !== defaults[k])) guide.completed.rule48 = 'done';
+                if (state.investments.some(r => r.monthly > 0)) guide.completed.invest = 'done';
+                if (state.loanKind !== 'none' && state.loanAmount > 0) guide.completed.debt = 'done';
+            }
+            function saveGuide() { try { localStorage.setItem(GUIDE_KEY, JSON.stringify(guide)) } catch (e) { } }
+            function touchGuide(key) { if (!guide.touched.includes(key)) guide.touched.push(key); const current = document.querySelector('.page.active')?.id.replace('tab-', ''); if (guide.completed[current] && guide.completed[current] !== 'dirty') { guide.completed[current] = 'dirty'; saveGuide() } }
+            function guideCompletedCount() { return GUIDE_STEPS.filter(x => ['done', 'skip'].includes(guide.completed[x.id])).length }
+            function nextGuideStep() { return GUIDE_STEPS.find(x => !['done', 'skip'].includes(guide.completed[x.id])) || null }
+            function renderGuide(c, p, d, stage) {
+                const count = guideCompletedCount(), todo = nextGuideStep();
+                set('guideScore', count + '／5 已確認'); $('guideProgress').style.width = (count / 5 * 100) + '%';
+                set('guideHint', todo ? '建議下一步：' + todo.title + '。完成後可回到總表確認所有連動數字。' : '全部步驟已確認。修改任何一頁，綜合總表仍會即時重算。');
+                set('guideStart', ''); // button text is updated below so guidance is never stale.
+                $('guideStart').textContent = todo ? '前往 ' + todo.title : '重新檢視綜合總表';
+                const root = $('guideSteps'); root.replaceChildren();
+                GUIDE_STEPS.forEach((x, i) => {
+                    const st = guide.completed[x.id], btn = document.createElement('button'); btn.type = 'button'; btn.className = 'guide-step' + (['done', 'skip'].includes(st) ? ' ready' : ''); btn.dataset.go = x.id; btn.dataset.focus = x.focus;
+                    const lines = [['step-index', (i + 1).toString().padStart(2, '0') + ' ／ 05'], ['step-title', x.title], ['step-note', x.note], ['step-state', st === 'skip' ? '已略過，可再編輯' : st === 'done' ? '已確認，可修改' : st === 'dirty' ? '已更新，待重新確認' : '待填寫 · 點此開始']];
+                    lines.forEach(([cls, val]) => { const t = document.createElement('span'); t.className = cls; t.textContent = val; btn.append(t) }); root.append(btn)
+                });
+                const current = document.querySelector('.page.active')?.id.replace('tab-', '') || 'overview';
+                const entry = GUIDE_STEPS.find(x => x.id === current);
+                $('flowBar').classList.toggle('active', Boolean(entry));
+                if (entry) {
+                    const i = GUIDE_STEPS.indexOf(entry); set('flowTitle', '第 ' + (i + 1) + ' 步／5　' + entry.title); set('flowSubtitle', '已自動更新其他分頁與綜合總表；完成後可前往下一頁。');
+                    $('guideComplete').textContent = masterReturnIndex !== null ? '確認修改，回到剛才的總表列' : i === 4 ? '確認完成，回綜合總表' : '確認本頁，前往下一步';
+                    $('guideSkip').hidden = current !== 'debt';
+                }
+                const linked = { linkLivingExpense: money(c.essential), linkStartingInvest: money(state.investAssets), linkMonthlyInvest: money(p.monthly), linkPortfolioInitial: money(state.investAssets), linkInvestHorizon: state.yearsToRetire + ' 年', linkIncome: money(state.income), linkLoanHorizon: state.yearsToRetire + ' 年' };
+                for (const [key, val] of Object.entries(linked)) set(key, val);
+            }
+            function jump(name, focusKey) {
+                if (!document.getElementById('tab-' + name)) return; showTab(name);
+                if (!focusKey) return;
+                const selector = focusKey === 'investRows' ? '#investRows .row-input' : '[data-key="' + focusKey + '"]';
+                requestAnimationFrame(() => { const node = document.querySelector('#tab-' + name + ' ' + selector); if (node) { node.focus({ preventScroll: true }); node.scrollIntoView({ behavior: 'smooth', block: 'center' }); node.closest('.field,.compound-row')?.classList.add('guide-focused'); setTimeout(() => node.closest('.field,.compound-row')?.classList.remove('guide-focused'), 1300) } })
+            }
+            function validateGuideStep(name) {
+                if (name === 'living') {
+                    const expenseKeys = ['food', 'clothing', 'housing', 'transport', 'other'];
+                    if (!guide.touched.includes('income') && state.income === 0) return { message: '請先確認每月稅後收入；若為 0，也請實際輸入一次。', field: 'income' };
+                    if (!expenseKeys.some(k => guide.touched.includes(k) || state[k] > 0)) return { message: '請填寫至少一項食、衣、住、行或其他生活費（可輸入 0）。', field: 'food' };
+                }
+                if (name === 'wealth' && !['cash', 'investAssets', 'propertyValue', 'otherAssets', 'existingMortgage', 'existingLiabilities'].some(k => guide.touched.includes(k) || state[k] !== 0)) return { message: '請先確認至少一項現有資產或負債；沒有資產也可輸入 0。', field: 'cash' };
+                return null;
+            }
+            function completeGuideStep() {
+                const name = document.querySelector('.page.active')?.id.replace('tab-', ''); if (!GUIDE_STEPS.some(s => s.id === name)) return;
+                if (masterReturnIndex !== null) { if (!validateGuideStep(name)) guide.completed[name] = 'done'; saveGuide(); render(); returnToMaster(); return }
+                const validation = validateGuideStep(name);
+                if (validation) { jump(name, validation.field); set('flowMessage', validation.message); return }
+                guide.completed[name] = 'done'; saveGuide(); set('flowMessage', ''); render();
+                if (masterReturnIndex !== null) { returnToMaster(); return }
+                const index = GUIDE_STEPS.findIndex(s => s.id === name); const next = GUIDE_STEPS[index + 1]; if (next) { jump(next.id, next.focus) } else { returnToMaster() }
+            }
+            function clearGuide() { guide = { completed: {}, touched: [], visited: [] }; saveGuide() }
+
+            function bind() {
+                $('guideStart').addEventListener('click', () => { masterReturnIndex = null; const next = nextGuideStep(); if (next) jump(next.id, next.focus); else showTab('overview') }); $('guideBack').addEventListener('click', returnToMaster); $('guideComplete').addEventListener('click', completeGuideStep); $('guideSkip').addEventListener('click', () => { guide.completed.debt = 'skip'; saveGuide(); render(); showTab('overview') }); document.addEventListener('input', e => { const el = e.target; if (el.matches('[data-key]')) { let k = el.dataset.key; if (!['backtestTradingBps', 'backtestCashRate', 'backtestRebalance', 'loanGraceMonths', 'loanRateChangeMonth', 'loanResetRate', 'loanExtra', 'loanExtraStart', 'loanCloseMonth', 'loanCloseFee'].includes(k)) monteResult = null; if (['backtestTradingBps', 'backtestCashRate', 'backtestRebalance', 'investAssets'].includes(k)) backtestResult = null; touchGuide(k); set('flowMessage', ''); if (el.type === 'checkbox') state[k] = el.checked; else if (numKeys.has(k)) state[k] = validateNumber(k, el.value); else state[k] = el.value; syncKey(k, el); render(); queueSave() } else if (el.matches('#investRows .row-input')) { monteResult = null; backtestResult = null; const row = el.closest('.compound-row'), i = +row.dataset.index, field = el.dataset.field; if (!state.investments[i]) return; touchGuide('investments'); set('flowMessage', ''); if (field === 'name') state.investments[i].name = el.value; else state.investments[i][field] = field === 'monthly' ? clamp(safe(+el.value), 0, 1e12) : clamp(safe(+el.value), -90, 100); render(); queueSave() } }); document.addEventListener('change', e => { if (e.target.matches('[data-key]')) { let k = e.target.dataset.key; if (e.target.type !== 'checkbox') e.target.value = state[k]; syncKey(k, e.target) } }); document.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.tab) { masterReturnIndex = null; showTab(b.dataset.tab) } if (b.dataset.go) { if (b.classList.contains('master-source')) masterReturnIndex = Array.from(document.querySelectorAll('#masterTableBody .master-row')).indexOf(b.closest('.master-row')); else if (b.classList.contains('guide-step')) masterReturnIndex = null; jump(b.dataset.go, b.dataset.focus) } if (b.dataset.remove !== undefined) { touchGuide('investments'); state.investments.splice(+b.dataset.remove, 1); renderInvestmentRows(); render(); queueSave() } });
+                $('addInvestment').addEventListener('click', () => { touchGuide('investments'); if (state.investments.length >= 16) { set('saveStatus', '最多 16 個投資項目。'); return } state.investments.push({ id: Date.now(), name: '新投資項目', monthly: 0, rate: 5 }); renderInvestmentRows(); render(); queueSave() }); $('clearInvestments').addEventListener('click', () => { touchGuide('investments'); state.investments.forEach(r => r.monthly = 0); renderInvestmentRows(); render(); queueSave() }); $('exportMaster').addEventListener('click', exportMasterCsv); $('printMaster').addEventListener('click', () => window.print()); $('saveAll').addEventListener('click', persist); $('downloadAnnual').addEventListener('click', downloadCsv); $('exportData').addEventListener('click', () => exportBlob('wealth_planner_data.json', JSON.stringify({ version: 7.1, exportedAt: new Date().toISOString(), data: state, guide }, null, 2), 'application/json;charset=utf-8')); $('importDataBtn').addEventListener('click', () => $('importDataFile').click()); $('importDataFile').addEventListener('change', async e => { const f = e.target.files?.[0]; if (!f) return; try { const obj = JSON.parse(await f.text()); if (!obj || typeof obj !== 'object' || !(obj.data || obj.income !== undefined)) throw Error('無效格式'); state = sanitize(obj.data || obj); monteResult = null; backtestResult = null; historicalRows = []; $('historyFile').value = ''; guide = obj.guide && typeof obj.guide === 'object' ? { completed: obj.guide.completed || {}, touched: Array.isArray(obj.guide.touched) ? obj.guide.touched : [], visited: Array.isArray(obj.guide.visited) ? obj.guide.visited : [] } : { completed: {}, touched: [], visited: [] }; saveGuide(); readInputs(); renderInvestmentRows(); render(); persist(); set('saveStatus', '已匯入資料，七頁已重新計算。') } catch (err) { set('saveStatus', '匯入失敗：請選擇本系統的 JSON 資料檔。') } finally { e.target.value = '' } });
+                $('sampleData').addEventListener('click', () => { if (!confirm('要以範例資料取代目前全部輸入嗎？')) return; clearGuide(); monteResult = null; backtestResult = null; historicalRows = []; $('historyFile').value = ''; state = sanitize({ ...defaults, income: 80000, food: 9000, clothing: 2500, housing: 16000, transport: 4000, other: 5500, irregularAnnual: 36000, existingMonthlyPay: 4000, cash: 400000, investAssets: 800000, propertyValue: 8000000, existingMortgage: 4500000, yearsToRetire: 20, loanKind: 'personal', loanAmount: 400000, loanRate: 3.6, loanYears: 7, loanFee: 6000, loanOwn: 100000, loanStrategy: 'market', investments: [{ name: '台股 ETF', monthly: 8000, rate: 6 }, { name: '債券／定存', monthly: 2000, rate: 2 }] }); readInputs(); renderInvestmentRows(); guide.completed = { living: 'done', wealth: 'done', rule48: 'done', invest: 'done', debt: 'done' }; saveGuide(); render(); persist(); showTab('overview'); set('saveStatus', '已載入範例資料，總表同步完成。') }); $('resetAll').addEventListener('click', () => { if (!confirm('確定清除六個分頁的所有輸入嗎？此動作無法復原。')) return; monteResult = null; backtestResult = null; historicalRows = []; $('historyFile').value = ''; state = JSON.parse(JSON.stringify(defaults)); masterReturnIndex = null; $('masterReturnNote').hidden = true; clearGuide(); readInputs(); renderInvestmentRows(); render(); persist(); showTab('overview'); set('saveStatus', '已重設所有資料與填寫進度。') })
+            }
+
+            // -------- V7: independent professional risk models. No data or prices leave this device. --------
+            let monteResult = null, backtestResult = null, historicalRows = [];
+            function seededUniform(seed) { let a = (Math.trunc(seed) || 48) >>> 0; return () => { a += 0x6D2B79F5; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296 } }
+            function gaussianFactory(seed) { const rand = seededUniform(seed); let spare = null; return () => { if (spare !== null) { const x = spare; spare = null; return x } const a = Math.max(1e-12, rand()), b = rand(), t = Math.sqrt(-2 * Math.log(a)); spare = t * Math.sin(2 * Math.PI * b); return t * Math.cos(2 * Math.PI * b) } }
+            function quantileSorted(a, q) { if (!a.length) return NaN; const pos = (a.length - 1) * q, i = Math.floor(pos), f = pos - i; return a[i] * (1 - f) + (a[Math.min(i + 1, a.length - 1)] - a[i]) * f }
+            function monteCarlo() {
+                const c = compute(); if (c.essential <= 0) return { error: '請先填寫必要生活支出，再計算退休資金存續占比。' };
+                const initial = state.mcSource === 'current' ? state.investAssets : c.portfolio.future;
+                const expense = c.essential * Math.pow(1 + state.inflation / 100, state.mcSource === 'future' ? state.yearsToRetire : 0);
+                const pension = state.pension, months = Math.round(state.mcYears * 12), n = Math.round(state.mcTrials);
+                // Annual arithmetic expected gross factor -> equivalent monthly lognormal expected gross factor.
+                const mu = state.mcMean / 100, vol = state.mcVol / 100, monthlySigma = vol / Math.sqrt(12), monthlyMean = Math.log(1 + mu) / 12 - monthlySigma * monthlySigma / 2;
+                const cost = (1 - state.mcFee / 100) ** (1 / 12), inf = Math.pow(1 + state.inflation / 100, 1 / 12), randNormal = gaussianFactory(state.mcSeed);
+                const years = Array.from({ length: state.mcYears }, () => []); let successes = 0;
+                for (let i = 0; i < n; i++) {
+                    let bal = initial, failed = false;
+                    for (let m = 0; m < months; m++) {
+                        const infl = Math.pow(inf, m); const pensionNow = state.mcPensionIndexed ? pension * infl : pension;
+                        const need = Math.max(0, expense * infl - pensionNow);
+                        if (!failed) { if (bal + 1e-7 < need) { bal = 0; failed = true } else { bal -= need; bal = Math.max(0, bal * Math.exp(monthlyMean + monthlySigma * randNormal()) * cost) } }
+                        if ((m + 1) % 12 === 0) years[Math.floor(m / 12)].push({ balance: bal, live: !failed });
+                    }
+                    if (!failed) successes++;
+                }
+                const perYear = years.map((y, i) => { const a = y.map(v => v.balance).sort((u, v) => u - v); return { year: i + 1, p10: quantileSorted(a, .1), p50: quantileSorted(a, .5), p90: quantileSorted(a, .9), success: y.filter(v => v.live).length / n } });
+                return { successRate: successes / n, opening: initial, expense: Math.max(0, expense - pension), years: perYear, p10: perYear.at(-1)?.p10 || 0, p50: perYear.at(-1)?.p50 || 0, inputs: { mu: state.mcMean, vol: state.mcVol, fee: state.mcFee, years: state.mcYears, trials: n, seed: state.mcSeed } };
+            }
+            function parseCsvLine(line) { const o = []; let q = false, t = ''; for (let i = 0; i < line.length; i++) { const ch = line[i]; if (ch === '"') { if (q && line[i + 1] === '"') { t += '"'; i++ } else q = !q } else if (ch === ',' && !q) { o.push(t.trim()); t = '' } else t += ch } o.push(t.trim()); return o }
+            function parseHistoryCsv(contents) {
+                const text = contents.replace(/^\uFEFF/, '').trim(); const lines = text.split(/\r?\n/).filter(l => l.trim()); if (lines.length < 21) throw Error('至少要有 20 筆有效價格紀錄。');
+                const heads = parseCsvLine(lines[0]).map(s => s.trim().toLowerCase());
+                const ix = ['date', 'etf', 'leveraged'].map(k => heads.indexOf(k)); if (ix.some(x => x < 0)) throw Error('標題必須包含 date,etf,leveraged 三欄。');
+                const rows = []; let prev = ''; for (const line of lines.slice(1)) {
+                    const v = parseCsvLine(line), date = v[ix[0]], etf = Number(v[ix[1]]), leveraged = Number(v[ix[2]]);
+                    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(new Date(date + 'T00:00:00Z').getTime()) || new Date(date + 'T00:00:00Z').toISOString().slice(0, 10) !== date || !(etf > 0) || !(leveraged > 0)) throw Error('日期格式必須 YYYY-MM-DD，兩檔調整後價格必須大於 0：' + line.slice(0, 55));
+                    if (prev && date <= prev) throw Error('日期必須嚴格由舊到新且不可重複：' + date); prev = date;
+                    rows.push({ date, etf, leveraged, day: Date.parse(date + 'T00:00:00Z') / 86400000 });
+                }
+                if (rows.length > 100000) throw Error('資料筆數過多（最多 100,000 筆）。');
+                return rows;
+            }
+            function backtest() {
+                if (historicalRows.length < 20) return { error: '尚未提供實際歷史價格 CSV。' };
+                const contributions = state.investments.reduce((sum, x) => sum + Number(x.monthly || 0), 0), initial = state.investAssets, rows = historicalRows;
+                if (initial + contributions <= 0) return { error: '請先在財富階梯填現有投資本金，或在投資複利設定每月投入。' };
+                const fee = state.backtestTradingBps / 10000, cashR = 1 + state.backtestCashRate / 100;
+                const configs = [{ name: '100% 一般 ETF', weights: [1, 0, 0] }, { name: '50% 正2＋50% 現金', weights: [0, .5, .5] }, { name: '50% 正2＋50% 一般 ETF', weights: [.5, .5, 0] }];
+                const result = configs.map(cf => {
+                    let hold = [0, 0, 0], prevMonth = '', prevQuarter = '', prevYear = '', prevPrice = rows[0], totalPrincipal = initial, cumReturn = 1, high = 1, maxDD = 0;
+                    let prevDate = rows[0].day, ledger = [], netCosts = 0; const firstMonth = rows[0].date.slice(0, 7);
+                    const trade = (amount, rebalance) => {
+                        const total = hold.reduce((x, y) => x + y, 0) + amount;
+                        if (rebalance) {
+                            const desired = cf.weights.map(w => w * total);
+                            const turnover = Math.abs(desired[0] - hold[0]) + Math.abs(desired[1] - hold[1]); const cost = Math.min(total, turnover * fee);
+                            netCosts += cost; const usable = total - cost; hold = cf.weights.map(w => w * usable);
+                        } else { const cost = amount * (cf.weights[0] + cf.weights[1]) * fee; netCosts += cost; for (let i = 0; i < 3; i++)hold[i] += cf.weights[i] * (amount - cost) }
+                    };
+                    trade(initial + contributions, true); totalPrincipal += contributions;
+                    if (initial + contributions > 0) cumReturn = hold.reduce((a, b) => a + b, 0) / (initial + contributions);
+                    for (let i = 0; i < rows.length; i++) {
+                        const row = rows[i], mon = row.date.slice(0, 7), q = row.date.slice(0, 4) + '-' + Math.ceil(Number(row.date.slice(5, 7)) / 3), yr = row.date.slice(0, 4);
+                        if (i > 0) {
+                            const dt = Math.max(0, row.day - prevDate);
+                            const previousTotal = hold.reduce((a, b) => a + b, 0);
+                            hold[0] *= row.etf / prevPrice.etf; hold[1] *= row.leveraged / prevPrice.leveraged; hold[2] *= Math.pow(cashR, dt / 365.25);
+                            let currentTotal = hold.reduce((a, b) => a + b, 0);
+                            let rebalance = state.backtestRebalance === 'monthly' && mon !== prevMonth || state.backtestRebalance === 'quarterly' && q !== prevQuarter || state.backtestRebalance === 'yearly' && yr !== prevYear;
+                            const deposited = mon !== prevMonth ? contributions : 0;
+                            if (deposited) { trade(contributions, rebalance); totalPrincipal += contributions; rebalance = false }
+                            else if (rebalance) trade(0, true);
+                            currentTotal = hold.reduce((a, b) => a + b, 0);
+                            // Time-weighted return excludes the new deposit, but includes trading costs.
+                            if (previousTotal > 0) cumReturn *= Math.max(0, (currentTotal - deposited) / previousTotal);
+                        }
+                        high = Math.max(high, cumReturn); maxDD = Math.max(maxDD, 1 - cumReturn / high);
+                        if (i === 0 || i === rows.length - 1 || mon !== prevMonth) ledger.push({ date: row.date, balance: hold.reduce((a, b) => a + b, 0), principal: totalPrincipal });
+                        prevPrice = row; prevDate = row.day; prevMonth = mon; prevQuarter = q; prevYear = yr;
+                    }
+                    const final = hold.reduce((a, b) => a + b, 0), days = Math.max(1, rows.at(-1).day - rows[0].day), annual = Math.pow(Math.max(1e-12, cumReturn), 365.25 / days) - 1;
+                    return { ...cf, final, principal: totalPrincipal, gain: final - totalPrincipal, timeWeightedAnnual: annual, maxDrawdown: maxDD, costs: netCosts, ledger };
+                });
+                return { strategies: result, period: rows[0].date + ' 至 ' + rows.at(-1).date, tradingDays: rows.length };
+            }
+            function amortPayment(amount, annualRate, n) { if (amount <= 0 || n <= 0) return 0; const r = annualRate / 1200; return r === 0 ? amount / n : amount * r / (1 - Math.pow(1 + r, -n)) }
+            function advancedLoanModel() {
+                const amt = state.loanKind === 'none' ? 0 : state.loanAmount, term = Math.round(state.loanYears * 12), horizon = Math.round(state.yearsToRetire * 12), grace = Math.min(Math.max(0, Math.round(state.loanGraceMonths)), Math.max(0, term - 1));
+                const rows = []; let bal = amt, totalInterest = 0, paidInterest = 0, paidMonths = 0, balanceAtHorizon = amt, peakPayment = 0, peakOneOff = 0, paidFees = 0;
+                for (let m = 1; m <= term && bal > 1e-7; m++) {
+                    const yearRate = state.loanRateChangeMonth > 0 && m >= state.loanRateChangeMonth ? state.loanResetRate : state.loanRate;
+                    const interest = bal * yearRate / 1200;
+                    const regular = m <= grace ? interest : Math.min(bal + interest, amortPayment(bal, yearRate, term - m + 1));
+                    const principal = Math.max(0, regular - interest);
+                    const extra = Math.min(Math.max(0, bal - principal), m >= state.loanExtraStart ? state.loanExtra : 0);
+                    bal = Math.max(0, bal - principal - extra);
+                    let settled = 0, penalty = 0;
+                    if (state.loanCloseMonth > 0 && m === state.loanCloseMonth && bal > 0) { settled = bal; penalty = bal * state.loanCloseFee / 100; bal = 0; paidFees += penalty }
+                    const recurring = regular + extra, oneOff = settled + penalty, cash = recurring + oneOff;
+                    peakPayment = Math.max(peakPayment, recurring); peakOneOff = Math.max(peakOneOff, oneOff); totalInterest += interest;
+                    if (m <= horizon) { paidInterest += interest; paidMonths = m; balanceAtHorizon = bal }
+                    rows.push({ month: m, rate: yearRate, interest, regular, extra, settled, penalty, recurring, oneOff, cash, balance: bal });
+                }
+                if (amt === 0) balanceAtHorizon = 0;
+                else if (horizon >= rows.length) balanceAtHorizon = 0;
+                const r = scenarioRatePortfolio(), initialOwn = state.loanOwn, fee = amt ? state.loanFee : 0, budget = amt ? peakPayment : 0;
+                let leverageHold = Math.max(0, initialOwn + amt - fee), baselineHold = initialOwn, reinvested = 0, liquidityGap = 0, shortfallMonth = 0;
+                for (let m = 1; m <= horizon; m++) {
+                    leverageHold *= 1 + r; baselineHold *= 1 + r;
+                    const row = rows[m - 1], recurring = row?.recurring || 0, oneOff = row?.oneOff || 0;
+                    const surplus = budget - recurring;
+                    leverageHold += surplus; baselineHold += budget; reinvested += surplus;
+                    if (oneOff > 0) {
+                        if (leverageHold + 1e-7 < oneOff && !liquidityGap) { liquidityGap = oneOff - leverageHold; shortfallMonth = m }
+                        leverageHold -= oneOff;
+                    }
+                    // A negative investment holding would imply unmodeled additional borrowing.
+                    // Keep the gap visible and suppress the comparison rather than extrapolating negative holdings.
+                    if (leverageHold < 0) leverageHold = 0;
+                }
+                const futureInitial = Math.max(0, initialOwn + amt - fee) * Math.pow(1 + r, horizon);
+                const netAtHorizon = leverageHold - balanceAtHorizon;
+                const feasible = liquidityGap === 0;
+                return { rows, totalInterest, paidInterest, balanceAtHorizon, peakPayment, peakOneOff, paidMonths, termMonths: term, leveragedAssets: leverageHold, baseline: baselineHold, netAtHorizon, difference: feasible ? netAtHorizon - baselineHold : null, reinvested, initialProfit: futureInitial - (initialOwn + amt) - paidInterest - paidFees, fee, penalties: paidFees, liquidityGap, shortfallMonth, feasible };
+            }
+            function renderAdvanced(c, p, d) {
+                set('advAssetLink', money(state.investAssets)); set('advMonthlyLink', money(p.monthly)); set('advRetireLink', state.yearsToRetire + ' 年'); set('advLoanLink', money(d.borrow));
+                set('btFunding', money(state.investAssets) + ' ＋ ' + money(p.monthly) + '/月'); set('loanLinkedYears', state.yearsToRetire + ' 年');
+                if (monteResult && !monteResult.error) { set('mcSuccess', per(monteResult.successRate)); set('mcOpening', money(monteResult.opening)); set('mcExpense', money(monteResult.expense)); set('mcP10', money(monteResult.p10)); set('mcP50', money(monteResult.p50)); bar('mcBar', monteResult.successRate); set('mcNote', '共 ' + fmt.format(state.mcTrials) + ' 條固定種子模擬；資金存續比例不是保證或歷史成功率。'); const body = $('mcYearRows'); body.replaceChildren(); for (const z of monteResult.years) { const tr = document.createElement('tr');[z.year + ' 年', money(z.p10), money(z.p50), money(z.p90), per(z.success)].forEach(val => { const td = document.createElement('td'); td.textContent = val; tr.append(td) }); body.append(tr) } }
+                else { set('mcSuccess', '尚未模擬'); set('mcOpening', money(state.mcSource === 'future' ? p.future : state.investAssets)); set('mcExpense', money(Math.max(0, c.essential * Math.pow(1 + state.inflation / 100, state.mcSource === 'future' ? state.yearsToRetire : 0) - state.pension))); set('mcP10', '—'); set('mcP50', '—'); bar('mcBar', 0); set('mcNote', monteResult?.error || '參數或連動資產變更後，請重新執行。'); $('mcYearRows').innerHTML = '<tr><td colspan="5">尚無有效結果</td></tr>' }
+                if (backtestResult && !backtestResult.error) { set('btStatus', '已回測：' + backtestResult.period + '，' + backtestResult.tradingDays + ' 筆價格；同一期間比較三種策略。'); const body = $('btResults'); body.replaceChildren(); for (const x of backtestResult.strategies) { const tr = document.createElement('tr');[x.name, money(x.final), money(x.principal), money(x.gain), per(x.timeWeightedAnnual), per(x.maxDrawdown)].forEach(a => { const td = document.createElement('td'); td.textContent = a; tr.append(td) }); body.append(tr) } }
+                else { set('btStatus', historicalRows.length ? ('已載入 ' + historicalRows.length + ' 筆價格；請執行回測。' + (backtestResult?.error || '')) : '尚未匯入真實歷史資料，沒有回測結果。'); $('btResults').innerHTML = '<tr><td colspan="6">尚無有效歷史回測</td></tr>' }
+                const x = d.detail; set('adTotalInterest', d.borrow ? money(x.totalInterest) : '未設定貸款'); set('adMaxPay', d.borrow ? money(x.peakPayment) : '—'); set('adDiff', d.borrow ? (x.feasible ? money(x.difference) : '無法比較') : '—'); set('adLiquidityNote', !d.borrow ? '請先設定貸款，再檢查完整現金流。' : x.liquidityGap > 0 ? '第 ' + x.shortfallMonth + ' 月提前結清款項無法完全由投資資產支付；缺口 ' + money(x.liquidityGap) + '，因此不顯示借款績效比較。' : x.peakOneOff > 0 ? '已將最高單次結清款 ' + money(x.peakOneOff) + ' 與固定月度預算分開，單次款項從借款方投資資產扣除。' : '已以最高正常月付（含每月額外還本）作為共同投入預算。'); const body = $('loanScheduleRows'); body.replaceChildren(); if (d.borrow) { for (const row of x.rows) { const tr = document.createElement('tr');[row.month + ' 月', row.rate.toFixed(2) + '%', money(row.interest), money(row.regular), money(row.extra + row.settled + row.penalty), money(row.cash), money(row.balance)].forEach(v => { const td = document.createElement('td'); td.textContent = v; tr.append(td) }); body.append(tr) } } else body.innerHTML = '<tr><td colspan="7">請至「借貸與正2」設定擬議貸款。</td></tr>';
+            }
+            function downloadTable(name, rows) { const csv = '\uFEFF' + rows.map(r => r.map(v => '"' + String(v ?? '').replaceAll('"', '""') + '"').join(',')).join('\r\n'); exportBlob(name, csv, 'text/csv;charset=utf-8') }
+            function bindAdvanced() {
+                $('runMonte').addEventListener('click', () => { monteResult = monteCarlo(); render(); if (monteResult.error) set('mcNote', monteResult.error) });
+                $('exportMonte').addEventListener('click', () => { if (!monteResult || monteResult.error) { set('mcNote', '請先執行蒙地卡羅，才有結果可匯出。'); return } downloadTable('retirement_monte_carlo.csv', [['retirement_year', 'p10_assets', 'median_assets', 'p90_assets', 'survival_fraction'], ...monteResult.years.map(y => [y.year, y.p10.toFixed(2), y.p50.toFixed(2), y.p90.toFixed(2), y.success.toFixed(4)])]) });
+                $('historyFile').addEventListener('change', async e => { const file = e.target.files?.[0]; if (!file) return; try { if (file.size > 8e6) throw Error('檔案超過 8MB，請先縮小日期範圍。'); historicalRows = parseHistoryCsv(await file.text()); backtestResult = null; set('btStatus', '匯入成功：' + historicalRows.length + ' 筆。'); render() } catch (err) { historicalRows = []; backtestResult = { error: err.message }; render(); set('btStatus', '資料格式錯誤：' + err.message) } });
+                $('runBacktest').addEventListener('click', () => { backtestResult = backtest(); render(); if (backtestResult.error) set('btStatus', backtestResult.error) });
+                $('downloadCsvTemplate').addEventListener('click', () => exportBlob('historical_adjusted_prices_template.csv', '\uFEFFdate,etf,leveraged\r\n', 'text/csv;charset=utf-8'));
+                $('exportBacktest').addEventListener('click', () => { if (!backtestResult || backtestResult.error) { set('btStatus', '請先匯入真實調整後價格並執行回測。'); return } const rows = [['strategy', 'date', 'assets', 'contributed_principal']]; for (const a of backtestResult.strategies) for (const row of a.ledger) rows.push([a.name, row.date, row.balance.toFixed(2), row.principal.toFixed(2)]); downloadTable('historic_backtest.csv', rows) });
+                $('exportLoanSchedule').addEventListener('click', () => { const d = advancedLoanModel(); if (!d.rows.length) { set('saveStatus', '請先設定擬議貸款金額。'); return } downloadTable('loan_amortization_schedule.csv', [['month', 'annual_nominal_rate_percent', 'interest', 'regular_payment', 'additional_principal', 'lump_sum_payoff', 'prepayment_penalty', 'total_cash_out', 'balance'], ...d.rows.map(r => [r.month, r.rate.toFixed(5), r.interest.toFixed(2), r.regular.toFixed(2), r.extra.toFixed(2), r.settled.toFixed(2), r.penalty.toFixed(2), r.cash.toFixed(2), r.balance.toFixed(2)])]) });
+            }
+
+            load(); getGuide(); readInputs(); renderInvestmentRows(); bind(); bindAdvanced(); render();
+        })();
+    </script>
 </body>
 
 </html>
